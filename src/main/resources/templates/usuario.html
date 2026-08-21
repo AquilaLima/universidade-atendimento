@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Área do Aluno - Atendimento</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f4f6f8;
+        color: #333;
+      }
+
+      /* =========================
+           HEADER
+        ========================= */
+      header {
+        background: #1f4e79;
+        color: white;
+        padding: 20px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      header h1 {
+        margin: 0;
+        font-size: 26px;
+      }
+
+      header p {
+        margin: 5px 0 0;
+        opacity: 0.9;
+      }
+
+      /* =========================
+           CONTAINER
+        ========================= */
+      .container {
+        max-width: 1200px;
+        margin: 30px auto;
+        padding: 0 20px;
+      }
+
+      /* =========================
+           CARDS
+        ========================= */
+      .card {
+        background: white;
+        padding: 25px;
+        margin-bottom: 25px;
+        border-radius: 10px;
+        box-shadow:
+          0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .card h2 {
+        margin-top: 0;
+        color: #1f4e79;
+      }
+
+      /* =========================
+           BOAS VINDAS
+        ========================= */
+      .boas-vindas {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+
+      .avatar {
+        width: 55px;
+        height: 55px;
+        background: #1f4e79;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: bold;
+      }
+
+      .boas-vindas h2 {
+        margin: 0;
+      }
+
+      .boas-vindas p {
+        margin: 6px 0 0;
+        color: #666;
+      }
+
+      /* =========================
+           BOTOES
+        ========================= */
+      .botoes {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .botao {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 18px;
+        background: #1f4e79;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: bold;
+        transition: 0.2s;
+      }
+
+      .botao:hover {
+        background: #163a5c;
+        transform: translateY(-1px);
+      }
+
+      .botao-faq {
+        background: #6f42c1;
+      }
+
+      .botao-faq:hover {
+        background: #59339d;
+      }
+
+      .botao-sair {
+        background: #c0392b;
+      }
+
+      .botao-sair:hover {
+        background: #922b21;
+      }
+
+      .botao-detalhes {
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+
+      /* =========================
+           FAQ DESTAQUE
+        ========================= */
+      .faq-destaque {
+        background: linear-gradient(135deg,
+            #eef3f8,
+            #f5f0ff);
+        border-left: 5px solid #6f42c1;
+      }
+
+      .faq-destaque h2 {
+        color: #6f42c1;
+      }
+
+      .faq-destaque p {
+        color: #666;
+        line-height: 1.5;
+      }
+
+      /* =========================
+           TABELA
+        ========================= */
+      .table-container {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+
+      th {
+        background: #1f4e79;
+        color: white;
+        padding: 13px;
+        text-align: left;
+      }
+
+      td {
+        padding: 12px;
+        border-bottom:
+          1px solid #ddd;
+      }
+
+      tr:hover {
+        background: #f7f9fb;
+      }
+
+      /* =========================
+           STATUS
+        ========================= */
+      .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-weight: bold;
+        font-size: 12px;
+        white-space: nowrap;
+      }
+
+      .status-aberto {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .status-atendimento {
+        background: #cfe2ff;
+        color: #084298;
+      }
+
+      .status-resolvido {
+        background: #d1e7dd;
+        color: #0f5132;
+      }
+
+      .status-cancelado {
+        background: #f8d7da;
+        color: #842029;
+      }
+
+      /* =========================
+           SEM ATENDIMENTOS
+        ========================= */
+      .sem-atendimentos {
+        text-align: center;
+        padding: 30px;
+        color: #777;
+      }
+
+      .sem-atendimentos-icon {
+        font-size: 40px;
+        margin-bottom: 10px;
+      }
+
+      /* =========================
+           FOOTER
+        ========================= */
+      footer {
+        text-align: center;
+        padding: 25px;
+        color: #777;
+        font-size: 13px;
+      }
+
+      /* =========================
+           RESPONSIVO
+        ========================= */
+      @media (max-width: 700px) {
+        header {
+          padding: 18px 20px;
+        }
+
+        header h1 {
+          font-size: 21px;
+        }
+
+        .container {
+          margin: 20px auto;
+          padding: 0 12px;
+        }
+
+        .boas-vindas {
+          align-items: flex-start;
+        }
+
+        .botoes {
+          flex-direction: column;
+        }
+
+        .botao {
+          width: 100%;
+        }
+
+        .botao-sair {
+          width: auto;
+        }
+
+        th,
+        td {
+          padding: 9px;
+          font-size: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- =========================
+     HEADER
+========================= -->
+    <header>
+      <div>
+        <h1> Área do Aluno </h1>
+        <p> Sistema de Atendimento Universitário </p>
+      </div>
+      <a href="/logout" class="botao botao-sair"> Sair </a>
+    </header>
+    <!-- =========================
+     CONTEÚDO
+========================= -->
+    <div class="container">
+      <!-- =========================
+         BOAS VINDAS
+    ========================= -->
+      <div class="card">
+        <div class="boas-vindas">
+          <div class="avatar"> 👤 </div>
+          <div>
+            <h2> Olá, <span th:text="${session.usuario.nome}"> Aluno </span>! </h2>
+            <p> Bem-vindo ao sistema de atendimento da universidade. </p>
+          </div>
+        </div>
+      </div>
+      <!-- =========================
+         AÇÕES
+    ========================= -->
+      <div class="card">
+        <h2> Acesso rápido </h2>
+        <div class="botoes">
+          <!-- Novo atendimento -->
+          <a href="/atendimentos/novo" class="botao"> ➕ Abrir Novo Atendimento </a>
+          <!-- Meus atendimentos -->
+          <a href="/meus-atendimentos" class="botao"> 📋 Meus Atendimentos </a>
+          <!-- FAQ -->
+          <a href="/faq" class="botao botao-faq"> 🤖 FAQ / Assistente Virtual </a>
+        </div>
+      </div>
+      <!-- =========================
+         FAQ DESTAQUE
+    ========================= -->
+      <div class="card faq-destaque">
+        <h2> 🤖 Precisa de ajuda? </h2>
+        <p> Consulte nossa FAQ para encontrar respostas rápidas sobre boletos, matrícula, documentos, notas, rematrícula, estágio e outros processos da universidade. </p>
+        <a href="/faq" class="botao botao-faq"> 🔎 Consultar FAQ </a>
+      </div>
+      <!-- =========================
+         MEUS ATENDIMENTOS
+    ========================= -->
+      <div class="card">
+        <h2> 📋 Meus Atendimentos </h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th> Protocolo </th>
+                <th> Assunto </th>
+                <th> Categoria </th>
+                <th> Prioridade </th>
+                <th> Status </th>
+                <th> Ação </th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Atendimentos -->
+              <tr th:each="atendimento : ${atendimentos}">
+                <td th:text="${atendimento.protocolo}"> AT-2026-0001 </td>
+                <td th:text="${atendimento.assunto}"> Assunto </td>
+                <td th:text="${atendimento.categoria}"> Acadêmico </td>
+                <td th:text="${atendimento.prioridade}"> NORMAL </td>
+                <!-- STATUS -->
+                <td>
+                  <span class="status-badge" th:classappend="
+
+                                ${atendimento.status == 'ABERTO'}
+                                ? ' status-aberto'
+
+                                :
+
+                                (${atendimento.status == 'EM ATENDIMENTO'}
+                                ? ' status-atendimento'
+
+                                :
+
+                                (${atendimento.status == 'CANCELADO'}
+                                ? ' status-cancelado'
+
+                                :
+
+                                ' status-resolvido'))
+
+                                " th:text="${atendimento.status}"> ABERTO </span>
+                </td>
+                <!-- AÇÃO -->
+                <td>
+                  <a class="botao botao-detalhes" th:href="@{/atendimentos/{id}(id=${atendimento.id})}"> 👁 Ver Atendimento </a>
+                </td>
+              </tr>
+              <!-- Nenhum atendimento -->
+              <tr th:if="${#lists.isEmpty(atendimentos)}">
+										<td
+                            colspan="6"
+                            class="sem-atendimentos">
+											<div class="sem-atendimentos-icon">
+                                📭
+                            </div>
+											<strong>
+                                Você ainda não possui atendimentos.
+                            </strong>
+											<br>
+												<br>
+
+                            Clique em
+                            
+													<strong>
+                                "Abrir Novo Atendimento"
+                            </strong>
+                            para registrar sua solicitação.
+
+                        
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+						<!-- =========================
+     FOOTER
+========================= -->
+						<footer>
+
+    Sistema de Atendimento Universitário
+
+</footer>
+					</body>
+				</html>

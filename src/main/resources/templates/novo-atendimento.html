@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Novo Atendimento - Universidade</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #1f4e79;
+            color: white;
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 35px auto;
+        }
+
+        .card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: #1f4e79;
+        }
+
+        .descricao {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .campo {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+            font-family: Arial, sans-serif;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 140px;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #1f4e79;
+            box-shadow: 0 0 3px rgba(31,78,121,0.3);
+        }
+
+        .botoes {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .botao {
+            display: inline-block;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            background-color: #1f4e79;
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .botao:hover {
+            background-color: #163a5c;
+        }
+
+        .botao-voltar {
+            background-color: #6c757d;
+        }
+
+        .botao-voltar:hover {
+            background-color: #545b62;
+        }
+
+        .rodape {
+            text-align: center;
+            color: #777;
+            font-size: 13px;
+            margin-top: 25px;
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 95%;
+                margin: 20px auto;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            header {
+                padding: 15px;
+            }
+
+            .botoes {
+                flex-direction: column;
+            }
+
+            .botao {
+                text-align: center;
+                width: 100%;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<header>
+
+    <h1>Área do Aluno</h1>
+
+    <a href="/usuario" class="botao">
+        Voltar
+    </a>
+
+</header>
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>Novo Atendimento</h2>
+
+        <p class="descricao">
+            Preencha os dados abaixo para abrir um novo chamado.
+        </p>
+
+        <form action="/atendimentos" method="post">
+
+            <div class="campo">
+
+                <label for="assunto">
+                    Assunto:
+                </label>
+
+                <input
+                    type="text"
+                    id="assunto"
+                    name="assunto"
+                    placeholder="Digite o assunto do atendimento"
+                    required>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label for="categoria">
+                    Categoria:
+                </label>
+
+                <select
+                    id="categoria"
+                    name="categoria"
+                    required>
+
+                    <option value="Academico">
+                        Acadêmico
+                    </option>
+
+                    <option value="Financeiro">
+                        Financeiro
+                    </option>
+
+                    <option value="Secretaria">
+                        Secretaria
+                    </option>
+
+                    <option value="Suporte">
+                        Suporte
+                    </option>
+
+                    <option value="Outros">
+                        Outros
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label for="prioridade">
+                    Prioridade:
+                </label>
+
+                <select
+                    id="prioridade"
+                    name="prioridade"
+                    required>
+
+                    <option value="NORMAL">
+                        Normal
+                    </option>
+
+                    <option value="ALTA">
+                        Alta
+                    </option>
+
+                    <option value="URGENTE">
+                        Urgente
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label for="descricao">
+                    Descrição:
+                </label>
+
+                <textarea
+                    id="descricao"
+                    name="descricao"
+                    placeholder="Descreva detalhadamente o motivo do atendimento..."
+                    required></textarea>
+
+            </div>
+
+
+            <div class="botoes">
+
+                <button
+                    type="submit"
+                    class="botao">
+
+                    Abrir Atendimento
+
+                </button>
+
+                <a
+                    href="/usuario"
+                    class="botao botao-voltar">
+
+                    Cancelar
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <div class="rodape">
+
+        Sistema de Atendimento da Universidade
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

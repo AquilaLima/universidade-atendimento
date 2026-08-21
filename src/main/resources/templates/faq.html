@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>FAQ - Assistente Virtual</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #333;
+        }
+
+        header {
+            background: #1f4e79;
+            color: white;
+            padding: 20px 40px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        header p {
+            margin: 5px 0 0;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .chat-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: #1f4e79;
+            color: white;
+            padding: 25px;
+        }
+
+        .chat-header h2 {
+            margin: 0 0 8px;
+        }
+
+        .chat-header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .chat-body {
+            padding: 25px;
+        }
+
+        .bot-message {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+
+        .bot-icon {
+            width: 42px;
+            height: 42px;
+            background: #1f4e79;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .message {
+            background: #eef3f8;
+            padding: 15px 18px;
+            border-radius: 10px;
+            max-width: 700px;
+        }
+
+        .message p {
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .pesquisa {
+            margin-bottom: 25px;
+        }
+
+        .pesquisa input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .pesquisa input:focus {
+            border-color: #1f4e79;
+        }
+
+        .titulo {
+            margin-bottom: 15px;
+            color: #1f4e79;
+        }
+
+        .faq-item {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .pergunta {
+            width: 100%;
+            background: white;
+            border: none;
+            padding: 16px;
+            text-align: left;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .pergunta:hover {
+            background: #f4f6f8;
+        }
+
+        .resposta {
+            display: none;
+            padding: 16px;
+            background: #f8f9fa;
+            border-top: 1px solid #ddd;
+            line-height: 1.6;
+        }
+
+        .categoria {
+            display: inline-block;
+            background: #e8f0f7;
+            color: #1f4e79;
+            padding: 4px 9px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+
+        .sem-resultado {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            color: #666;
+        }
+
+        .atendimento {
+            margin-top: 30px;
+            padding: 25px;
+            background: #eef3f8;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .atendimento h3 {
+            margin-top: 0;
+            color: #1f4e79;
+        }
+
+        .botao {
+            display: inline-block;
+            padding: 11px 20px;
+            background: #1f4e79;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+
+        .botao:hover {
+            background: #163a5c;
+        }
+
+        .botao-voltar {
+            background: #6c757d;
+            margin-left: 10px;
+        }
+
+        .botao-voltar:hover {
+            background: #545b62;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #777;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 20px;
+            }
+
+            .container {
+                margin: 15px auto;
+                padding: 0 10px;
+            }
+
+            .chat-body {
+                padding: 15px;
+            }
+
+            .botao {
+                display: block;
+                margin: 8px 0;
+                text-align: center;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<header>
+
+    <h1>Universidade</h1>
+
+    <p>Assistente Virtual</p>
+
+</header>
+
+
+<div class="container">
+
+    <div class="chat-card">
+
+        <div class="chat-header">
+
+            <h2>🤖 Assistente Virtual</h2>
+
+            <p>
+                Olá,
+                <strong th:text="${session.usuario.nome}">
+                    Aluno
+                </strong>!
+                Como posso ajudar?
+            </p>
+
+        </div>
+
+
+        <div class="chat-body">
+
+            <!-- Mensagem inicial -->
+
+            <div class="bot-message">
+
+                <div class="bot-icon">
+                    🤖
+                </div>
+
+                <div class="message">
+
+                    <p>
+                        Encontre respostas para as dúvidas mais
+                        comuns sobre os processos da universidade.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Pesquisa -->
+
+            <div class="pesquisa">
+
+                <input
+                    type="text"
+                    id="pesquisa"
+                    placeholder="🔎 Digite sua dúvida..."
+                    onkeyup="filtrarFAQ()">
+
+            </div>
+
+
+            <h3 class="titulo">
+                Perguntas frequentes
+            </h3>
+
+
+            <!-- Perguntas -->
+
+            <div id="listaFAQ">
+
+                <div
+                    class="faq-item"
+                    th:each="item : ${perguntas}">
+
+                    <button
+                        class="pergunta"
+                        type="button"
+                        onclick="mostrarResposta(this)">
+
+                        <span
+                            class="categoria"
+                            th:text="${item.categoria}">
+                            Categoria
+                        </span>
+
+                        <br>
+
+                        <span
+                            th:text="${item.pergunta}">
+                            Pergunta
+                        </span>
+
+                    </button>
+
+
+                    <div class="resposta">
+
+                        <p
+                            th:text="${item.resposta}">
+                            Resposta
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Nenhum resultado -->
+
+            <div
+                id="semResultado"
+                class="sem-resultado">
+
+                <h3>😕 Não encontramos essa dúvida</h3>
+
+                <p>
+                    Não encontramos uma resposta para sua pesquisa.
+                </p>
+
+                <p>
+                    Você pode abrir um atendimento para que
+                    nossa equipe possa ajudar.
+                </p>
+
+            </div>
+
+
+            <!-- Atendimento -->
+
+            <div class="atendimento">
+
+                <h3>
+                    ❓ Ainda precisa de ajuda?
+                </h3>
+
+                <p>
+                    Se sua dúvida não foi respondida pela FAQ,
+                    abra um atendimento para falar com a universidade.
+                </p>
+
+                <a
+                    href="/atendimentos/novo"
+                    class="botao">
+
+                    🎫 Abrir Atendimento
+
+                </a>
+
+                <a
+                    href="/usuario"
+                    class="botao botao-voltar">
+
+                    ← Voltar
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<footer>
+
+    Sistema de Atendimento Universitário
+
+</footer>
+
+
+<script>
+
+    function mostrarResposta(botao) {
+
+        const resposta =
+            botao.nextElementSibling;
+
+        const aberta =
+            resposta.style.display === "block";
+
+        // Fecha todas as respostas
+
+        document
+            .querySelectorAll(".resposta")
+            .forEach(function(item) {
+
+                item.style.display = "none";
+
+            });
+
+        // Abre somente a selecionada
+
+        if (!aberta) {
+
+            resposta.style.display = "block";
+
+        }
+
+    }
+
+
+    function filtrarFAQ() {
+
+        const pesquisa =
+            document
+                .getElementById("pesquisa")
+                .value
+                .toLowerCase()
+                .trim();
+
+        const itens =
+            document.querySelectorAll(".faq-item");
+
+        let encontrados = 0;
+
+        itens.forEach(function(item) {
+
+            const texto =
+                item.innerText.toLowerCase();
+
+            if (texto.includes(pesquisa)) {
+
+                item.style.display = "block";
+
+                encontrados++;
+
+            } else {
+
+                item.style.display = "none";
+
+            }
+
+        });
+
+
+        const semResultado =
+            document.getElementById("semResultado");
+
+        if (encontrados === 0) {
+
+            semResultado.style.display = "block";
+
+        } else {
+
+            semResultado.style.display = "none";
+
+        }
+
+    }
+
+</script>
+
+</body>
+
+</html>
