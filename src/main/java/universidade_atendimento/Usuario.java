@@ -10,17 +10,23 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    // Inicialmente pode ficar vazio para alunos pré-cadastrados
     private String nome;
 
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    // Será preenchida quando o aluno finalizar o cadastro
+    private String telefone;
+
+    // Será preenchida quando o aluno finalizar o cadastro
     private String senha;
 
     @Column(nullable = false)
     private String perfil;
+
+    @Column(nullable = false)
+    private Boolean cadastroFinalizado = false;
 
     public Usuario() {
     }
@@ -49,6 +55,14 @@ public class Usuario {
         this.email = email;
     }
 
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
     public String getSenha() {
         return senha;
     }
@@ -63,5 +77,13 @@ public class Usuario {
 
     public void setPerfil(String perfil) {
         this.perfil = perfil;
+    }
+
+    public Boolean getCadastroFinalizado() {
+        return cadastroFinalizado;
+    }
+
+    public void setCadastroFinalizado(Boolean cadastroFinalizado) {
+        this.cadastroFinalizado = cadastroFinalizado;
     }
 }

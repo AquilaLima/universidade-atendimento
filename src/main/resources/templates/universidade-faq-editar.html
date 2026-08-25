@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Editar FAQ</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            padding: 20px;
+        }
+
+        .card {
+            background-color: white;
+            padding: 35px;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+        }
+
+        h1 {
+            color: #1f4e79;
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .campo {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+            font-family: Arial, sans-serif;
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .botao {
+            width: 100%;
+            padding: 12px;
+            background-color: #1f4e79;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .botao:hover {
+            background-color: #163a5c;
+        }
+
+        .voltar {
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            color: #1f4e79;
+            text-decoration: none;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>Editar FAQ</h1>
+
+        <form
+            th:action="@{/universidade/faq/editar/{id}(id=${faq.id})}"
+            method="post">
+
+            <div class="campo">
+
+                <label for="categoria">
+                    Categoria
+                </label>
+
+                <input
+                    type="text"
+                    id="categoria"
+                    name="categoria"
+                    th:value="${faq.categoria}"
+                    required>
+
+            </div>
+
+            <div class="campo">
+
+                <label for="pergunta">
+                    Pergunta
+                </label>
+
+                <input
+                    type="text"
+                    id="pergunta"
+                    name="pergunta"
+                    th:value="${faq.pergunta}"
+                    required>
+
+            </div>
+
+            <div class="campo">
+
+                <label for="resposta">
+                    Resposta
+                </label>
+
+                <textarea
+                    id="resposta"
+                    name="resposta"
+                    th:text="${faq.resposta}"
+                    required></textarea>
+
+            </div>
+
+            <button
+                type="submit"
+                class="botao">
+
+                Salvar Alterações
+
+            </button>
+
+        </form>
+
+        <a
+            href="/universidade/faq"
+            class="voltar">
+
+            ← Voltar para FAQ
+
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,290 +1,505 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
-  <head>
+
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Área da Universidade - Atendimento</title>
+
     <style>
-      * {
-        box-sizing: border-box;
-      }
 
-      body {
-        margin: 0;
-        font-family: Arial, Helvetica, sans-serif;
-        background: #f4f6f9;
-        color: #333;
-      }
-
-      /* ================= HEADER ================= */
-      header {
-        background: #1f4e79;
-        color: white;
-        padding: 18px 5%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-      }
-
-      .logo h1 {
-        margin: 0;
-        font-size: 22px;
-      }
-
-      .logo span {
-        font-size: 13px;
-        opacity: 0.85;
-      }
-
-      /* ================= BOTÕES ================= */
-      .botao {
-        display: inline-block;
-        padding: 9px 15px;
-        border-radius: 6px;
-        text-decoration: none;
-        color: white;
-        background: #1f4e79;
-        font-size: 13px;
-        font-weight: bold;
-        transition: 0.2s;
-      }
-
-      .botao:hover {
-        background: #163a5c;
-      }
-
-      .botao-sair {
-        background: #c0392b;
-      }
-
-      .botao-sair:hover {
-        background: #922b21;
-      }
-
-      /* ================= CONTAINER ================= */
-      .container {
-        width: 92%;
-        max-width: 1300px;
-        margin: 30px auto;
-      }
-
-      /* ================= CARDS ================= */
-      .card {
-        background: white;
-        padding: 25px;
-        border-radius: 10px;
-        margin-bottom: 25px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
-      }
-
-      .card h2 {
-        margin-top: 0;
-        color: #1f4e79;
-      }
-
-      /* ================= BOAS-VINDAS ================= */
-      .boas-vindas {
-        border-left: 5px solid #1f4e79;
-      }
-
-      .boas-vindas h2 {
-        margin-bottom: 8px;
-      }
-
-      .boas-vindas p {
-        margin-bottom: 0;
-        color: #666;
-      }
-
-      /* ================= INDICADORES ================= */
-      .indicadores {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 18px;
-      }
-
-      .indicador {
-        padding: 22px;
-        border-radius: 10px;
-        background: #f4f7fa;
-        border: 1px solid #e1e7ed;
-        text-align: center;
-      }
-
-      .indicador h3 {
-        margin: 0 0 12px;
-        color: #555;
-        font-size: 15px;
-      }
-
-      .numero {
-        font-size: 30px;
-        font-weight: bold;
-        color: #1f4e79;
-      }
-
-      /* ================= TABELA ================= */
-      .tabela-container {
-        overflow-x: auto;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 1050px;
-      }
-
-      th {
-        background: #1f4e79;
-        color: white;
-        padding: 13px;
-        text-align: left;
-        font-size: 13px;
-        white-space: nowrap;
-      }
-
-      td {
-        padding: 13px;
-        border-bottom: 1px solid #e2e2e2;
-        font-size: 13px;
-        white-space: nowrap;
-      }
-
-      tbody tr:hover {
-        background: #f7f9fb;
-      }
-
-      /* ================= STATUS ================= */
-      .status {
-        font-weight: bold;
-      }
-
-      /* ================= SEM ATENDIMENTOS ================= */
-      .sem-atendimentos {
-        text-align: center;
-        padding: 30px;
-        color: #777;
-      }
-
-      /* ================= RESPONSIVO ================= */
-      @media (max-width: 900px) {
-        .indicadores {
-          grid-template-columns: repeat(2, 1fr);
+        * {
+            box-sizing: border-box;
         }
-      }
 
-      @media (max-width: 600px) {
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f9;
+            color: #333;
+        }
+
+        /* ================= HEADER ================= */
+
         header {
-          padding: 15px;
+            background: #1f4e79;
+            color: white;
+            padding: 18px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
 
         .logo h1 {
-          font-size: 18px;
+            margin: 0;
+            font-size: 22px;
         }
 
         .logo span {
-          font-size: 11px;
+            font-size: 13px;
+            opacity: 0.85;
         }
+
+        .acoes-header {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* ================= BOTÕES ================= */
+
+        .botao {
+            display: inline-block;
+            padding: 9px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: white;
+            background: #1f4e79;
+            font-size: 13px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .botao:hover {
+            background: #163a5c;
+        }
+
+        .botao-faq {
+            background: #2e86c1;
+        }
+
+        .botao-faq:hover {
+            background: #21618c;
+        }
+
+        .botao-sair {
+            background: #c0392b;
+        }
+
+        .botao-sair:hover {
+            background: #922b21;
+        }
+
+        /* ================= CONTAINER ================= */
 
         .container {
-          width: 95%;
-          margin: 20px auto;
+            width: 92%;
+            max-width: 1300px;
+            margin: 30px auto;
         }
+
+        /* ================= CARDS ================= */
 
         .card {
-          padding: 18px;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
         }
+
+        .card h2 {
+            margin-top: 0;
+            color: #1f4e79;
+        }
+
+        /* ================= BOAS-VINDAS ================= */
+
+        .boas-vindas {
+            border-left: 5px solid #1f4e79;
+        }
+
+        .boas-vindas h2 {
+            margin-bottom: 8px;
+        }
+
+        .boas-vindas p {
+            margin-bottom: 0;
+            color: #666;
+        }
+
+        /* ================= INDICADORES ================= */
 
         .indicadores {
-          grid-template-columns: 1fr;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
         }
-      }
+
+        .indicador {
+            padding: 22px;
+            border-radius: 10px;
+            background: #f4f7fa;
+            border: 1px solid #e1e7ed;
+            text-align: center;
+        }
+
+        .indicador h3 {
+            margin: 0 0 12px;
+            color: #555;
+            font-size: 15px;
+        }
+
+        .numero {
+            font-size: 30px;
+            font-weight: bold;
+            color: #1f4e79;
+        }
+
+        /* ================= TABELA ================= */
+
+        .tabela-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1050px;
+        }
+
+        th {
+            background: #1f4e79;
+            color: white;
+            padding: 13px;
+            text-align: left;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 13px;
+            border-bottom: 1px solid #e2e2e2;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        tbody tr:hover {
+            background: #f7f9fb;
+        }
+
+        /* ================= STATUS ================= */
+
+        .status {
+            font-weight: bold;
+        }
+
+        /* ================= SEM ATENDIMENTOS ================= */
+
+        .sem-atendimentos {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+
+        /* ================= RESPONSIVO ================= */
+
+        @media (max-width: 900px) {
+
+            .indicadores {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 15px;
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .acoes-header {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .acoes-header .botao {
+                text-align: center;
+            }
+
+            .logo h1 {
+                font-size: 18px;
+            }
+
+            .logo span {
+                font-size: 11px;
+            }
+
+            .container {
+                width: 95%;
+                margin: 20px auto;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            .indicadores {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
     </style>
-  </head>
-  <body>
+
+</head>
+
+<body>
+
     <!-- ================= HEADER ================= -->
+
     <header>
-      <div class="logo">
-        <h1>Universidade</h1>
-        <span>Painel de Atendimento</span>
-      </div>
-      <a href="/logout" class="botao botao-sair"> Sair </a>
-    </header>
-    <!-- ================= CONTEÚDO ================= -->
-    <div class="container">
-      <!-- ================= BOAS-VINDAS ================= -->
-      <div class="card boas-vindas">
-        <h2> Olá, <span th:text="${session.usuario.nome}"> Universidade </span>! </h2>
-        <p> Bem-vindo ao painel de gerenciamento dos atendimentos. </p>
-      </div>
-      <!-- ================= INDICADORES ================= -->
-      <div class="card">
-        <h2>Resumo dos Atendimentos</h2>
-        <div class="indicadores">
-          <div class="indicador">
-            <h3>Total</h3>
-            <div class="numero" th:text="${total}"> 0 </div>
-          </div>
-          <div class="indicador">
-            <h3>Abertos</h3>
-            <div class="numero" th:text="${abertos}"> 0 </div>
-          </div>
-          <div class="indicador">
-            <h3>Em Atendimento</h3>
-            <div class="numero" th:text="${emAtendimento}"> 0 </div>
-          </div>
-          <div class="indicador">
-            <h3>Resolvidos</h3>
-            <div class="numero" th:text="${resolvidos}"> 0 </div>
-          </div>
+
+        <div class="logo">
+
+            <h1>Universidade</h1>
+
+            <span>Painel de Atendimento</span>
+
         </div>
-      </div>
-      <!-- ================= ATENDIMENTOS ================= -->
-      <div class="card">
-        <h2>Todos os Atendimentos</h2>
-        <div class="tabela-container">
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Protocolo</th>
-                <th>Aluno</th>
-                <th>Assunto</th>
-                <th>Categoria</th>
-                <th>Prioridade</th>
-                <th>Status</th>
-                <th>Data de Abertura</th>
-                <th>Ação</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr th:each="atendimento : ${atendimentos}">
-                <td th:text="${atendimento.id}"> 1 </td>
-                <td th:text="${atendimento.protocolo}"> AT-2026-0001 </td>
-                <td th:text="${atendimento.nome}"> Aluno </td>
-                <td th:text="${atendimento.assunto}"> Assunto </td>
-                <td th:text="${atendimento.categoria}"> Acadêmico </td>
-                <td th:text="${atendimento.prioridade}"> NORMAL </td>
-                <td class="status" th:text="${atendimento.status}"> ABERTO </td>
-                <td th:text="${atendimento.dataAbertura}"> 2026-08-16 </td>
-                <td>
-                  <a class="botao" th:href="@{/atendimentos/{id}(id=${atendimento.id})}"> Ver Atendimento </a>
-                </td>
-              </tr>
-              <!-- ================= VAZIO ================= -->
-              <tr th:if="${#lists.isEmpty(atendimentos)}">
-										<td colspan="9"
-                            class="sem-atendimentos">
 
-                            Nenhum atendimento registrado.
+        <div class="acoes-header">
 
-                        </td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-					</div>
-				</div>
-			</body>
-		</html>
+            <a
+                href="/universidade/faq"
+                class="botao botao-faq">
+
+                Gerenciar FAQ
+
+            </a>
+
+            <a
+                href="/logout"
+                class="botao botao-sair">
+
+                Sair
+
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- ================= CONTEÚDO ================= -->
+
+    <div class="container">
+
+
+        <!-- ================= BOAS-VINDAS ================= -->
+
+        <div class="card boas-vindas">
+
+            <h2>
+
+                Olá,
+
+                <span th:text="${session.usuario.nome}">
+                    Universidade
+                </span>!
+
+            </h2>
+
+            <p>
+                Bem-vindo ao painel de gerenciamento dos atendimentos.
+            </p>
+
+        </div>
+
+
+        <!-- ================= INDICADORES ================= -->
+
+        <div class="card">
+
+            <h2>Resumo dos Atendimentos</h2>
+
+            <div class="indicadores">
+
+                <div class="indicador">
+
+                    <h3>Total</h3>
+
+                    <div
+                        class="numero"
+                        th:text="${total}">
+
+                        0
+
+                    </div>
+
+                </div>
+
+
+                <div class="indicador">
+
+                    <h3>Abertos</h3>
+
+                    <div
+                        class="numero"
+                        th:text="${abertos}">
+
+                        0
+
+                    </div>
+
+                </div>
+
+
+                <div class="indicador">
+
+                    <h3>Em Atendimento</h3>
+
+                    <div
+                        class="numero"
+                        th:text="${emAtendimento}">
+
+                        0
+
+                    </div>
+
+                </div>
+
+
+                <div class="indicador">
+
+                    <h3>Resolvidos</h3>
+
+                    <div
+                        class="numero"
+                        th:text="${resolvidos}">
+
+                        0
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= ATENDIMENTOS ================= -->
+
+        <div class="card">
+
+            <h2>Todos os Atendimentos</h2>
+
+            <div class="tabela-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Protocolo</th>
+
+                            <th>Aluno</th>
+
+                            <th>Assunto</th>
+
+                            <th>Categoria</th>
+
+                            <th>Prioridade</th>
+
+                            <th>Status</th>
+
+                            <th>Data de Abertura</th>
+
+                            <th>Ação</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr th:each="atendimento : ${atendimentos}">
+
+                            <td th:text="${atendimento.id}">
+                                1
+                            </td>
+
+                            <td th:text="${atendimento.protocolo}">
+                                AT-2026-0001
+                            </td>
+
+                            <td th:text="${atendimento.nome}">
+                                Aluno
+                            </td>
+
+                            <td th:text="${atendimento.assunto}">
+                                Assunto
+                            </td>
+
+                            <td th:text="${atendimento.categoria}">
+                                Acadêmico
+                            </td>
+
+                            <td th:text="${atendimento.prioridade}">
+                                NORMAL
+                            </td>
+
+                            <td
+                                class="status"
+                                th:text="${atendimento.status}">
+
+                                ABERTO
+
+                            </td>
+
+                            <td th:text="${atendimento.dataAbertura}">
+                                2026-08-16
+                            </td>
+
+                            <td>
+
+                                <a
+                                    class="botao"
+                                    th:href="@{/atendimentos/{id}(id=${atendimento.id})}">
+
+                                    Ver Atendimento
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- ================= VAZIO ================= -->
+
+                        <tr th:if="${#lists.isEmpty(atendimentos)}">
+
+                            <td
+                                colspan="9"
+                                class="sem-atendimentos">
+
+                                Nenhum atendimento registrado.
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

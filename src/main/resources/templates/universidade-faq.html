@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar FAQ</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            color: #333;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            margin: 30px auto;
+        }
+
+        .topo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .topo h1 {
+            color: #1f4e79;
+            margin: 0;
+        }
+
+        .voltar {
+            text-decoration: none;
+            color: #1f4e79;
+            font-weight: bold;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: #1f4e79;
+        }
+
+        .campo {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .botao {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .botao-criar {
+            background-color: #1f4e79;
+            color: white;
+        }
+
+        .botao-editar {
+            background-color: #0d6efd;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .botao-status {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        .botao-excluir {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #1f4e79;
+            color: white;
+        }
+
+        .acoes {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .status-ativa {
+            color: #198754;
+            font-weight: bold;
+        }
+
+        .status-inativa {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .sem-registros {
+            text-align: center;
+            padding: 25px;
+            color: #777;
+        }
+
+        @media (max-width: 800px) {
+            .topo {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            table,
+            thead,
+            tbody,
+            th,
+            td,
+            tr {
+                display: block;
+            }
+
+            thead {
+                display: none;
+            }
+
+            tr {
+                margin-bottom: 15px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                padding: 10px;
+            }
+
+            td {
+                border: none;
+                padding: 8px 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="topo">
+        <h1>Gerenciar FAQ</h1>
+
+        <a href="/universidade" class="voltar">
+            ← Voltar para o painel
+        </a>
+    </div>
+
+    <!-- CRIAR NOVA FAQ -->
+    <div class="card">
+
+        <h2>Nova pergunta</h2>
+
+        <form action="/universidade/faq/criar" method="post">
+
+            <div class="campo">
+                <label for="categoria">Categoria</label>
+
+                <input
+                    type="text"
+                    id="categoria"
+                    name="categoria"
+                    placeholder="Ex.: Financeiro, Acadêmico, Tecnologia"
+                    required>
+            </div>
+
+            <div class="campo">
+                <label for="pergunta">Pergunta</label>
+
+                <input
+                    type="text"
+                    id="pergunta"
+                    name="pergunta"
+                    placeholder="Digite a pergunta"
+                    required>
+            </div>
+
+            <div class="campo">
+                <label for="resposta">Resposta</label>
+
+                <textarea
+                    id="resposta"
+                    name="resposta"
+                    placeholder="Digite a resposta"
+                    required></textarea>
+            </div>
+
+            <button
+                type="submit"
+                class="botao botao-criar">
+
+                Criar FAQ
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- LISTAGEM -->
+    <div class="card">
+
+        <h2>Perguntas cadastradas</h2>
+
+        <table>
+
+            <thead>
+            <tr>
+                <th>Categoria</th>
+                <th>Pergunta</th>
+                <th>Resposta</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            <tr th:each="item : ${perguntas}">
+
+                <td th:text="${item.categoria}">
+                    Categoria
+                </td>
+
+                <td th:text="${item.pergunta}">
+                    Pergunta
+                </td>
+
+                <td th:text="${item.resposta}">
+                    Resposta
+                </td>
+
+                <td>
+
+                    <span
+                        th:if="${item.ativa}"
+                        class="status-ativa">
+                        Ativa
+                    </span>
+
+                    <span
+                        th:unless="${item.ativa}"
+                        class="status-inativa">
+                        Inativa
+                    </span>
+
+                </td>
+
+                <td>
+
+                    <div class="acoes">
+
+                        <a
+                            th:href="@{/universidade/faq/editar/{id}(id=${item.id})}"
+                            class="botao botao-editar">
+
+                            Editar
+                        </a>
+
+                        <form
+                            th:action="@{/universidade/faq/status/{id}(id=${item.id})}"
+                            method="post">
+
+                            <button
+                                type="submit"
+                                class="botao botao-status">
+
+                                <span th:if="${item.ativa}">
+                                    Desativar
+                                </span>
+
+                                <span th:unless="${item.ativa}">
+                                    Ativar
+                                </span>
+
+                            </button>
+
+                        </form>
+
+                        <form
+                            th:action="@{/universidade/faq/excluir/{id}(id=${item.id})}"
+                            method="post"
+                            onsubmit="return confirm('Deseja realmente excluir esta FAQ?');">
+
+                            <button
+                                type="submit"
+                                class="botao botao-excluir">
+
+                                Excluir
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(perguntas)}">
+
+                <td colspan="5" class="sem-registros">
+                    Nenhuma pergunta cadastrada.
+                </td>
+
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+</body>
+</html>

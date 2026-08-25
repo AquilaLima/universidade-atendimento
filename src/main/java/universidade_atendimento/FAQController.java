@@ -1,188 +1,301 @@
 package universidade_atendimento;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-
 import jakarta.servlet.http.HttpSession;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class FAQController {
+
+    private final FAQRepository faqRepository;
+
+    public FAQController(
+            FAQRepository faqRepository) {
+
+        this.faqRepository = faqRepository;
+    }
+
+    // =====================================================
+    // FAQ PARA O ALUNO
+    // =====================================================
 
     @GetMapping("/faq")
     public String faq(
             Model model,
             HttpSession session) {
 
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
+        Usuario usuario =
+                (Usuario) session.getAttribute("usuario");
 
-        // Verifica se o usuário está logado
+        // Usuário não autenticado
         if (usuario == null) {
+
             return "redirect:/login";
         }
 
-        // A FAQ será destinada aos alunos
+        // FAQ destinada ao aluno
         if (!"ALUNO".equals(usuario.getPerfil())) {
-            return "redirect:/";
+
+            return "redirect:/universidade";
         }
 
-        List<PerguntaFAQ> perguntas = new ArrayList<>();
-
-        perguntas.add(new PerguntaFAQ(
-                "Financeiro",
-                "Como emitir a segunda via do boleto?",
-                "Acesse o portal financeiro da instituição, entre com seus dados e procure pela opção Boletos/Financeiro. Caso o boleto não esteja disponível, abra um atendimento para o setor financeiro."
-        ));
-
-        perguntas.add(new PerguntaFAQ(
-                "Financeiro",
-                "Como consultar minhas mensalidades?",
-                "Acesse o portal do aluno e consulte a área Financeiro para visualizar mensalidades, vencimentos e pagamentos."
-        ));
-
-        perguntas.add(new PerguntaFAQ(
-                "Financeiro",
-                "Como faço para negociar uma mensalidade em atraso?",
-                "Entre em contato com o setor financeiro da instituição para verificar as opções de negociação disponíveis."
-        ));
-
-        perguntas.add(new PerguntaFAQ(
-                "Acadêmico",
-                "Como solicitar uma declaração de matrícula?",
-                "A declaração pode ser solicitada através do portal do aluno, na área de documentos acadêmicos."
-        ));
-
-        perguntas.add(new PerguntaFAQ(
-                "Acadêmico",
-                "Como solicitar documentos acadêmicos?",
-                "Acesse o portal do aluno e procure pela área de Documentos ou Secretaria. Caso o documento desejado não esteja disponível, abra um atendimento."
-        ));
-
-        perguntas.add(new PerguntaFAQ(
-                "Acadêmico",
-                "Como faço minha rematrícula?",
-                "Acesse o período de rematrícula informado pela instituição e siga as instruções disponíveis no portal acadêmico."
-        ));
-
-        perguntas.add(new PerguntaFAQ(
-                "Acadêmico",
-                "Como faço para trancar a matrícula?",
-                "A solicitação de trancamento deve ser realizada conforme as regras e prazos acadêmicos da instituição. Entre em contato com a secretaria para verificar os procedimentos."
-        ));
-
-        perguntas.add(new PerguntaFAQ(
-                "Acadêmico",
-                "Como faço para cancelar minha matrícula?",
-                "O cancelamento deve ser solicitado junto à instituição, seguindo os procedimentos definidos pela secretaria acadêmica."
-        ));
-
-        perguntas.add(new PerguntaFAQ(
-                "Acadêmico",
-                "Como solicitar transferência de curso?",
-                "Procure a secretaria acadêmica para verificar os cursos disponíveis, requisitos e procedimentos para transferência."
-        ));
-
-        perguntas.add(new PerguntaFAQ(
-                "Acadêmico",
-                "Como consultar minhas notas?",
-                "Acesse o portal acadêmico e entre na área de Notas ou Desempenho Acadêmico."
-        ));
-
-        perguntas.add(new PerguntaFAQ(
-                "Acadêmico",
-                "Onde consulto o calendário acadêmico?",
-                "O calendário acadêmico pode ser consultado no portal ou nos canais oficiais da instituição."
-        ));
-
-        perguntas.add(new PerguntaFAQ(
-                "Acadêmico",
-                "Como consultar o horário das aulas?",
-                "Acesse o portal do aluno e consulte a área de Horários ou Grade Horária."
-        ));
-
-        perguntas.add(new PerguntaFAQ(
-                "Acadêmico",
-                "Como saber a sala onde terei aula?",
-                "Consulte sua grade horária no portal acadêmico. A sala geralmente aparece junto às informações da disciplina."
-        ));
-
-        perguntas.add(new PerguntaFAQ(
-                "Acadêmico",
-                "Como faço para entrar em contato com um professor?",
-                "Utilize os canais acadêmicos disponibilizados pela instituição ou procure a coordenação do curso."
-        ));
-
-        perguntas.add(new PerguntaFAQ(
-                "Acadêmico",
-                "Como solicitar aproveitamento de disciplinas?",
-                "A solicitação deve ser feita junto à secretaria ou coordenação do curso, normalmente mediante apresentação da documentação acadêmica necessária."
-        ));
-
-        perguntas.add(new PerguntaFAQ(
-                "Acadêmico",
-                "Como funciona a segunda chamada de uma prova?",
-                "Verifique as regras acadêmicas da instituição e os prazos para solicitação de segunda chamada."
-        ));
-
-        perguntas.add(new PerguntaFAQ(
-                "Estágio",
-                "Como solicitar documentos para estágio?",
-                "Entre em contato com o setor responsável por estágios ou consulte a área de estágio no portal acadêmico."
-        ));
-
-        perguntas.add(new PerguntaFAQ(
-                "Tecnologia",
-                "Como acessar as plataformas de estudo?",
-                "Utilize seu login institucional para acessar o ambiente virtual de aprendizagem indicado pela faculdade."
-        ));
-
-        perguntas.add(new PerguntaFAQ(
-                "Acesso",
-                "Esqueci minha senha. Como recuperar?",
-                "Na tela de login do portal, utilize a opção Esqueci minha senha e siga as instruções para recuperação."
-        ));
-
-        perguntas.add(new PerguntaFAQ(
-                "Atendimento",
-                "Minha dúvida não está na FAQ. O que faço?",
-                "Não encontrou o que precisava? Abra um atendimento para que a equipe da universidade possa analisar sua solicitação."
-        ));
-
-        model.addAttribute("perguntas", perguntas);
+        // Mostra somente perguntas ativas
+        model.addAttribute(
+                "perguntas",
+                faqRepository
+                        .findByAtivaTrueOrderByCategoriaAsc()
+        );
 
         return "faq";
     }
 
-    // Classe interna para representar uma pergunta da FAQ
-    public static class PerguntaFAQ {
+    // =====================================================
+    // GERENCIAMENTO DA FAQ - UNIVERSIDADE
+    // =====================================================
 
-        private String categoria;
-        private String pergunta;
-        private String resposta;
+    @GetMapping("/universidade/faq")
+    public String gerenciarFAQ(
+            HttpSession session,
+            Model model) {
 
-        public PerguntaFAQ(
-                String categoria,
-                String pergunta,
-                String resposta) {
+        Usuario usuario =
+                (Usuario) session.getAttribute("usuario");
 
-            this.categoria = categoria;
-            this.pergunta = pergunta;
-            this.resposta = resposta;
+        if (usuario == null) {
+
+            return "redirect:/login";
         }
 
-        public String getCategoria() {
-            return categoria;
+        if (!"UNIVERSIDADE".equals(
+                usuario.getPerfil())) {
+
+            return "redirect:/usuario";
         }
 
-        public String getPergunta() {
-            return pergunta;
+        model.addAttribute(
+                "perguntas",
+                faqRepository
+                        .findAllByOrderByCategoriaAsc()
+        );
+
+        return "universidade-faq";
+    }
+
+    // =====================================================
+    // CRIAR NOVA PERGUNTA
+    // =====================================================
+
+    @PostMapping("/universidade/faq/criar")
+    public String criarFAQ(
+            @RequestParam String categoria,
+            @RequestParam String pergunta,
+            @RequestParam String resposta,
+            HttpSession session) {
+
+        Usuario usuario =
+                (Usuario) session.getAttribute("usuario");
+
+        if (usuario == null) {
+
+            return "redirect:/login";
         }
 
-        public String getResposta() {
-            return resposta;
+        if (!"UNIVERSIDADE".equals(
+                usuario.getPerfil())) {
+
+            return "redirect:/usuario";
         }
+
+        FAQ faq = new FAQ();
+
+        faq.setCategoria(
+                categoria.trim()
+        );
+
+        faq.setPergunta(
+                pergunta.trim()
+        );
+
+        faq.setResposta(
+                resposta.trim()
+        );
+
+        faq.setAtiva(true);
+
+        faqRepository.save(faq);
+
+        return "redirect:/universidade/faq";
+    }
+
+    // =====================================================
+    // TELA PARA EDITAR PERGUNTA
+    // =====================================================
+
+    @GetMapping("/universidade/faq/editar/{id}")
+    public String editarFAQ(
+            @PathVariable Long id,
+            HttpSession session,
+            Model model) {
+
+        Usuario usuario =
+                (Usuario) session.getAttribute("usuario");
+
+        if (usuario == null) {
+
+            return "redirect:/login";
+        }
+
+        if (!"UNIVERSIDADE".equals(
+                usuario.getPerfil())) {
+
+            return "redirect:/usuario";
+        }
+
+        FAQ faq =
+                faqRepository
+                        .findById(id)
+                        .orElse(null);
+
+        if (faq == null) {
+
+            return "redirect:/universidade/faq";
+        }
+
+        model.addAttribute(
+                "faq",
+                faq
+        );
+
+        return "universidade-faq-editar";
+    }
+
+    // =====================================================
+    // SALVAR ALTERAÇÃO
+    // =====================================================
+
+    @PostMapping("/universidade/faq/editar/{id}")
+    public String salvarEdicaoFAQ(
+            @PathVariable Long id,
+            @RequestParam String categoria,
+            @RequestParam String pergunta,
+            @RequestParam String resposta,
+            HttpSession session) {
+
+        Usuario usuario =
+                (Usuario) session.getAttribute("usuario");
+
+        if (usuario == null) {
+
+            return "redirect:/login";
+        }
+
+        if (!"UNIVERSIDADE".equals(
+                usuario.getPerfil())) {
+
+            return "redirect:/usuario";
+        }
+
+        FAQ faq =
+                faqRepository
+                        .findById(id)
+                        .orElse(null);
+
+        if (faq == null) {
+
+            return "redirect:/universidade/faq";
+        }
+
+        faq.setCategoria(
+                categoria.trim()
+        );
+
+        faq.setPergunta(
+                pergunta.trim()
+        );
+
+        faq.setResposta(
+                resposta.trim()
+        );
+
+        faqRepository.save(faq);
+
+        return "redirect:/universidade/faq";
+    }
+
+    // =====================================================
+    // ATIVAR / DESATIVAR
+    // =====================================================
+
+    @PostMapping("/universidade/faq/status/{id}")
+    public String alterarStatus(
+            @PathVariable Long id,
+            HttpSession session) {
+
+        Usuario usuario =
+                (Usuario) session.getAttribute("usuario");
+
+        if (usuario == null) {
+
+            return "redirect:/login";
+        }
+
+        if (!"UNIVERSIDADE".equals(
+                usuario.getPerfil())) {
+
+            return "redirect:/usuario";
+        }
+
+        FAQ faq =
+                faqRepository
+                        .findById(id)
+                        .orElse(null);
+
+        if (faq != null) {
+
+            faq.setAtiva(
+                    !Boolean.TRUE.equals(faq.getAtiva())
+            );
+
+            faqRepository.save(faq);
+        }
+
+        return "redirect:/universidade/faq";
+    }
+
+    // =====================================================
+    // EXCLUIR
+    // =====================================================
+
+    @PostMapping("/universidade/faq/excluir/{id}")
+    public String excluirFAQ(
+            @PathVariable Long id,
+            HttpSession session) {
+
+        Usuario usuario =
+                (Usuario) session.getAttribute("usuario");
+
+        if (usuario == null) {
+
+            return "redirect:/login";
+        }
+
+        if (!"UNIVERSIDADE".equals(
+                usuario.getPerfil())) {
+
+            return "redirect:/usuario";
+        }
+
+        if (faqRepository.existsById(id)) {
+
+            faqRepository.deleteById(id);
+        }
+
+        return "redirect:/universidade/faq";
     }
 }
