@@ -176,7 +176,29 @@ public class LoginController {
     // =====================================================
     // FINALIZAR CADASTRO DO ALUNO
     // =====================================================
+    @GetMapping("/")
+public String inicio(HttpSession session) {
 
+    Usuario usuario =
+            (Usuario) session.getAttribute("usuario");
+
+    if (usuario == null) {
+        return "redirect:/login";
+    }
+
+    if ("UNIVERSIDADE".equals(usuario.getPerfil())) {
+        return "redirect:/universidade";
+    }
+
+    if ("ALUNO".equals(usuario.getPerfil())) {
+        return "redirect:/usuario";
+    }
+
+    session.invalidate();
+
+    return "redirect:/login";
+}
+    
     @GetMapping("/finalizar-cadastro")
     public String finalizarCadastro(
             HttpSession session,
