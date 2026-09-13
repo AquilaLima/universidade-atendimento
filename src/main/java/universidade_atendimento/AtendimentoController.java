@@ -1,7 +1,7 @@
 package universidade_atendimento;
 
 import jakarta.servlet.http.HttpSession;
-import java.time.LocalDateTime;
+
 import java.time.Year;
 import java.util.List;
 
@@ -18,14 +18,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class AtendimentoController {
 
     private final AtendimentoRepository repository;
+    private final UsuarioRepository usuarioRepository;
     private final BlockchainService blockchainService;
+    private final MensagemAtendimentoRepository mensagemRepository;
 
     public AtendimentoController(
             AtendimentoRepository repository,
-            BlockchainService blockchainService) {
+            UsuarioRepository usuarioRepository,
+            BlockchainService blockchainService,
+            MensagemAtendimentoRepository mensagemRepository) {
 
         this.repository = repository;
+        this.usuarioRepository = usuarioRepository;
         this.blockchainService = blockchainService;
+        this.mensagemRepository = mensagemRepository;
     }
 
     // =========================================================
@@ -37,23 +43,15 @@ public class AtendimentoController {
             HttpSession session,
             Model model) {
 
-        Usuario usuario =
-                (Usuario) session.getAttribute("usuario");
+        Usuario usuario = obterAlunoAtivo(session);
 
-        // Usuário precisa estar autenticado
         if (usuario == null) {
+            session.invalidate();
             return "redirect:/login";
         }
 
-        // Apenas alunos podem abrir atendimento
-        if (!"ALUNO".equals(usuario.getPerfil())) {
-            return "redirect:/universidade";
-        }
+        Atendimento atendimento = new Atendimento();
 
-        Atendimento atendimento =
-                new Atendimento();
-
-        // Dados do aluno autenticado
         atendimento.setNome(usuario.getNome());
         atendimento.setEmail(usuario.getEmail());
         atendimento.setTelefone(usuario.getTelefone());
@@ -80,21 +78,12 @@ public class AtendimentoController {
             @ModelAttribute Atendimento atendimento,
             HttpSession session) {
 
-        Usuario usuario =
-                (Usuario) session.getAttribute("usuario");
+        Usuario usuario = obterAlunoAtivo(session);
 
         if (usuario == null) {
+            session.invalidate();
             return "redirect:/login";
         }
-
-        // Somente ALUNO pode criar atendimento
-        if (!"ALUNO".equals(usuario.getPerfil())) {
-            return "redirect:/universidade";
-        }
-
-        // =====================================================
-        // GERA PROTOCOLO
-        // =====================================================
 
         String protocolo =
                 "AT-"
@@ -104,30 +93,20 @@ public class AtendimentoController {
 
         atendimento.setProtocolo(protocolo);
 
-        // =====================================================
-        // VINCULA O ATENDIMENTO AO ALUNO
-        // =====================================================
-
         atendimento.setUsuario(usuario);
 
-        // Os dados vêm sempre do usuário autenticado,
-        // e não do formulário enviado pelo navegador
         atendimento.setNome(usuario.getNome());
         atendimento.setEmail(usuario.getEmail());
         atendimento.setTelefone(usuario.getTelefone());
 
         repository.save(atendimento);
 
-        // =====================================================
-        // BLOCKCHAIN
-        // =====================================================
-
         blockchainService.registrarEvento(
                 "ATENDIMENTO_CRIADO",
                 atendimento.getId(),
                 usuario.getId(),
                 "Atendimento criado pelo aluno. Protocolo: "
-                        + atendimento.getProtocolo()
+                + atendimento.getProtocolo()
         );
 
         return "redirect:/usuario";
@@ -143,20 +122,38 @@ public class AtendimentoController {
             Model model,
             HttpSession session) {
 
-        Usuario usuario =
-                (Usuario) session.getAttribute("usuario");
+        Long usuarioId =
+                (Long) session.getAttribute("usuarioId");
 
-        if (usuario == null) {
+        if (usuarioId == null) {
             return "redirect:/login";
         }
 
+        Usuario usuario =
+                usuarioRepository
+                        .findById(usuarioId)
+                        .orElse(null);
+
+        if (usuario == null
+                || !Boolean.TRUE.equals(usuario.getAtivo())) {
+
+            session.invalidate();
+            return "redirect:/login";
+        }
+
+        session.setAttribute(
+                "usuario",
+                usuario
+        );
+
         Atendimento atendimento =
-                repository.findById(id)
-                        .orElseThrow(
-                                () -> new RuntimeException(
-                                        "Atendimento não encontrado"
-                                )
-                        );
+                repository
+                        .findById(id)
+                        .orElse(null);
+
+        if (atendimento == null) {
+            return "redirect:/login";
+        }
 
         // =====================================================
         // PERFIL ALUNO
@@ -164,8 +161,6 @@ public class AtendimentoController {
 
         if ("ALUNO".equals(usuario.getPerfil())) {
 
-            // O aluno somente pode visualizar
-            // os próprios atendimentos
             if (atendimento.getUsuario() == null
                     || !atendimento
                             .getUsuario()
@@ -212,9 +207,29 @@ public class AtendimentoController {
             return "redirect:/login";
         }
 
+        // =====================================================
+        // MENSAGENS
+        // =====================================================
+
+        List<MensagemAtendimento> mensagens =
+                mensagemRepository
+                        .findByAtendimentoOrderByDataHoraAsc(
+                                atendimento
+                        );
+
         model.addAttribute(
                 "atendimento",
                 atendimento
+        );
+
+        model.addAttribute(
+                "usuario",
+                usuario
+        );
+
+        model.addAttribute(
+                "mensagens",
+                mensagens
         );
 
         return "detalhes";
@@ -231,40 +246,50 @@ public class AtendimentoController {
             HttpSession session) {
 
         Usuario usuario =
-                (Usuario) session.getAttribute("usuario");
+                obterUniversidadeAtiva(session);
 
         if (usuario == null) {
+            session.invalidate();
             return "redirect:/login";
         }
 
-        // Somente UNIVERSIDADE pode alterar status
-        if (!"UNIVERSIDADE".equals(
-                usuario.getPerfil())) {
+        Atendimento atendimento =
+                repository
+                        .findById(id)
+                        .orElse(null);
 
-            return "redirect:/usuario";
+        if (atendimento == null) {
+            return "redirect:/universidade";
         }
 
-        Atendimento atendimento =
-                repository.findById(id)
-                        .orElseThrow(
-                                () -> new RuntimeException(
-                                        "Atendimento não encontrado"
-                                )
-                        );
+        List<String> statusPermitidos =
+                List.of(
+                        "ABERTO",
+                        "EM ATENDIMENTO",
+                        "RESOLVIDO",
+                        "FECHADO",
+                        "CANCELADO"
+                );
+
+        if (!statusPermitidos.contains(status)) {
+            return "redirect:/atendimentos/" + id;
+        }
+
+        String statusAnterior =
+                atendimento.getStatus();
 
         atendimento.setStatus(status);
 
         repository.save(atendimento);
 
-        // =====================================================
-        // BLOCKCHAIN
-        // =====================================================
-
         blockchainService.registrarEvento(
                 "STATUS_ALTERADO",
                 atendimento.getId(),
                 usuario.getId(),
-                "Status alterado para: " + status
+                "Status alterado de "
+                + statusAnterior
+                + " para "
+                + status
         );
 
         return "redirect:/atendimentos/" + id;
@@ -280,17 +305,11 @@ public class AtendimentoController {
             Model model) {
 
         Usuario usuario =
-                (Usuario) session.getAttribute("usuario");
+                obterAlunoAtivo(session);
 
         if (usuario == null) {
+            session.invalidate();
             return "redirect:/login";
-        }
-
-        // Somente ALUNO
-        if (!"ALUNO".equals(
-                usuario.getPerfil())) {
-
-            return "redirect:/universidade";
         }
 
         List<Atendimento> atendimentos =
@@ -307,6 +326,336 @@ public class AtendimentoController {
         );
 
         return "usuario";
+    }
+
+    // =========================================================
+// ENVIAR MENSAGEM
+// =========================================================
+
+@PostMapping("/atendimentos/{id}/mensagem")
+public String enviarMensagem(
+        @PathVariable Long id,
+        @RequestParam String mensagem,
+        HttpSession session) {
+
+    Long usuarioId =
+            (Long) session.getAttribute(
+                    "usuarioId"
+            );
+
+    if (usuarioId == null) {
+        return "redirect:/login";
+    }
+
+    Usuario usuario =
+            usuarioRepository
+                    .findById(usuarioId)
+                    .orElse(null);
+
+    if (usuario == null
+            || !Boolean.TRUE.equals(
+                    usuario.getAtivo())) {
+
+        session.invalidate();
+
+        return "redirect:/login";
+    }
+
+    // =====================================================
+    // SOMENTE ALUNO OU UNIVERSIDADE PODE ENVIAR MENSAGEM
+    // =====================================================
+
+    if (!"ALUNO".equals(usuario.getPerfil())
+            && !"UNIVERSIDADE".equals(
+                    usuario.getPerfil())) {
+
+        return "redirect:/login";
+    }
+
+    Atendimento atendimento =
+            repository
+                    .findById(id)
+                    .orElse(null);
+
+    if (atendimento == null) {
+
+        if ("ALUNO".equals(
+                usuario.getPerfil())) {
+
+            return "redirect:/usuario";
+        }
+
+        return "redirect:/universidade";
+    }
+
+    // =====================================================
+    // ALUNO SÓ PODE ACESSAR O PRÓPRIO ATENDIMENTO
+    // =====================================================
+
+    if ("ALUNO".equals(
+            usuario.getPerfil())) {
+
+        if (atendimento.getUsuario() == null
+                || !atendimento
+                        .getUsuario()
+                        .getId()
+                        .equals(usuario.getId())) {
+
+            return "redirect:/usuario";
+        }
+    }
+
+    // =====================================================
+    // NÃO ACEITA MENSAGEM APÓS FECHAMENTO OU CANCELAMENTO
+    // =====================================================
+
+    String statusAtual =
+            atendimento.getStatus();
+
+    if ("FECHADO".equalsIgnoreCase(statusAtual)
+            || "CANCELADO".equalsIgnoreCase(statusAtual)) {
+
+        return "redirect:/atendimentos/" + id;
+    }
+
+    // =====================================================
+    // VALIDAR MENSAGEM
+    // =====================================================
+
+    if (mensagem == null
+            || mensagem.isBlank()) {
+
+        return "redirect:/atendimentos/" + id;
+    }
+
+    // =====================================================
+    // SALVAR MENSAGEM
+    // =====================================================
+
+    MensagemAtendimento novaMensagem =
+            new MensagemAtendimento();
+
+    novaMensagem.setAtendimento(
+            atendimento
+    );
+
+    novaMensagem.setUsuario(
+            usuario
+    );
+
+    novaMensagem.setMensagem(
+            mensagem.trim()
+    );
+
+    mensagemRepository.save(
+            novaMensagem
+    );
+
+    // =====================================================
+    // ALUNO RESPONDE CHAMADO RESOLVIDO
+    // VOLTA AUTOMATICAMENTE PARA EM ATENDIMENTO
+    // =====================================================
+
+    if ("ALUNO".equals(usuario.getPerfil())
+            && "RESOLVIDO".equalsIgnoreCase(
+                    atendimento.getStatus())) {
+
+        atendimento.setStatus(
+                "EM ATENDIMENTO"
+        );
+
+        repository.save(
+                atendimento
+        );
+
+        blockchainService.registrarEvento(
+                "ATENDIMENTO_REABERTO",
+                atendimento.getId(),
+                usuario.getId(),
+                "Atendimento reaberto automaticamente "
+                + "após nova mensagem do aluno. "
+                + "Status alterado de RESOLVIDO "
+                + "para EM ATENDIMENTO."
+        );
+    }
+
+    // =====================================================
+    // PRIMEIRA RESPOSTA DA UNIVERSIDADE
+    // ABERTO -> EM ATENDIMENTO
+    // =====================================================
+
+    if ("UNIVERSIDADE".equals(
+            usuario.getPerfil())
+            && "ABERTO".equalsIgnoreCase(
+                    atendimento.getStatus())) {
+
+        atendimento.setStatus(
+                "EM ATENDIMENTO"
+        );
+
+        repository.save(
+                atendimento
+        );
+
+        blockchainService.registrarEvento(
+                "STATUS_ALTERADO",
+                atendimento.getId(),
+                usuario.getId(),
+                "Status alterado automaticamente "
+                + "de ABERTO para EM ATENDIMENTO"
+        );
+    }
+
+    // =====================================================
+    // AUDITORIA DA MENSAGEM
+    // =====================================================
+
+    blockchainService.registrarEvento(
+            "MENSAGEM_ADICIONADA",
+            atendimento.getId(),
+            usuario.getId(),
+            "Mensagem adicionada ao atendimento "
+            + atendimento.getProtocolo()
+    );
+
+    return "redirect:/atendimentos/" + id;
+}
+
+    // =========================================================
+    // REABRIR ATENDIMENTO
+    // =========================================================
+
+    @PostMapping("/atendimentos/{id}/reabrir")
+    public String reabrirAtendimento(
+            @PathVariable Long id,
+            HttpSession session) {
+
+        Usuario usuario =
+                obterUniversidadeAtiva(session);
+
+        if (usuario == null) {
+            session.invalidate();
+            return "redirect:/login";
+        }
+
+        Atendimento atendimento =
+                repository
+                        .findById(id)
+                        .orElse(null);
+
+        if (atendimento == null) {
+            return "redirect:/universidade";
+        }
+
+        // SOMENTE RESOLVIDO PODE SER REABERTO
+        if (!"RESOLVIDO".equalsIgnoreCase(
+                atendimento.getStatus())) {
+
+            return "redirect:/atendimentos/" + id;
+        }
+
+        atendimento.setStatus(
+                "EM ATENDIMENTO"
+        );
+
+        repository.save(atendimento);
+
+        blockchainService.registrarEvento(
+                "ATENDIMENTO_REABERTO",
+                atendimento.getId(),
+                usuario.getId(),
+                "Atendimento reaberto. "
+                + "Status alterado de RESOLVIDO "
+                + "para EM ATENDIMENTO."
+        );
+
+        return "redirect:/atendimentos/" + id;
+    }
+
+    // =========================================================
+    // VALIDAR ALUNO ATIVO
+    // =========================================================
+
+    private Usuario obterAlunoAtivo(
+            HttpSession session) {
+
+        Long usuarioId =
+                (Long) session.getAttribute("usuarioId");
+
+        if (usuarioId == null) {
+            return null;
+        }
+
+        Usuario usuario =
+                usuarioRepository
+                        .findById(usuarioId)
+                        .orElse(null);
+
+        if (usuario == null) {
+            return null;
+        }
+
+        if (!"ALUNO".equals(
+                usuario.getPerfil())) {
+
+            return null;
+        }
+
+        if (!Boolean.TRUE.equals(
+                usuario.getAtivo())) {
+
+            return null;
+        }
+
+        session.setAttribute(
+                "usuario",
+                usuario
+        );
+
+        return usuario;
+    }
+
+    // =========================================================
+    // VALIDAR UNIVERSIDADE ATIVA
+    // =========================================================
+
+    private Usuario obterUniversidadeAtiva(
+            HttpSession session) {
+
+        Long usuarioId =
+                (Long) session.getAttribute("usuarioId");
+
+        if (usuarioId == null) {
+            return null;
+        }
+
+        Usuario usuario =
+                usuarioRepository
+                        .findById(usuarioId)
+                        .orElse(null);
+
+        if (usuario == null) {
+            return null;
+        }
+
+        if (!"UNIVERSIDADE".equals(
+                usuario.getPerfil())) {
+
+            return null;
+        }
+
+        if (!Boolean.TRUE.equals(
+                usuario.getAtivo())) {
+
+            return null;
+        }
+
+        session.setAttribute(
+                "usuario",
+                usuario
+        );
+
+        return usuario;
     }
 
     // =========================================================
@@ -369,82 +718,5 @@ public class AtendimentoController {
                 "resolvidos",
                 resolvidos
         );
-    }
-
-    // =========================================================
-    // RESPOSTA DA UNIVERSIDADE
-    // =========================================================
-
-    @PostMapping("/atendimentos/{id}/resposta")
-    public String responderAtendimento(
-            @PathVariable Long id,
-            @RequestParam String resposta,
-            HttpSession session) {
-
-        Usuario usuario =
-                (Usuario) session.getAttribute("usuario");
-
-        if (usuario == null) {
-            return "redirect:/login";
-        }
-
-        // Somente universidade pode responder
-        if (!"UNIVERSIDADE".equals(
-                usuario.getPerfil())) {
-
-            return "redirect:/usuario";
-        }
-
-        Atendimento atendimento =
-                repository.findById(id)
-                        .orElseThrow(
-                                () -> new RuntimeException(
-                                        "Atendimento não encontrado"
-                                )
-                        );
-
-        // =====================================================
-        // VALIDA RESPOSTA
-        // =====================================================
-
-        if (resposta == null
-                || resposta.isBlank()) {
-
-            return "redirect:/atendimentos/" + id;
-        }
-
-        atendimento.setResposta(
-                resposta.trim()
-        );
-
-        atendimento.setDataResposta(
-                LocalDateTime.now()
-        );
-
-        // Quando a universidade responde a um chamado aberto,
-        // ele passa automaticamente para EM ATENDIMENTO
-        if ("ABERTO".equalsIgnoreCase(
-                atendimento.getStatus())) {
-
-            atendimento.setStatus(
-                    "EM ATENDIMENTO"
-            );
-        }
-
-        repository.save(atendimento);
-
-        // =====================================================
-        // BLOCKCHAIN
-        // =====================================================
-
-        blockchainService.registrarEvento(
-                "RESPOSTA_ADICIONADA",
-                atendimento.getId(),
-                usuario.getId(),
-                "Resposta adicionada ao atendimento "
-                        + atendimento.getProtocolo()
-        );
-
-        return "redirect:/atendimentos/" + id;
     }
 }

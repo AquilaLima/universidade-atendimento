@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -16,18 +18,32 @@
     <artifactId>universidade-atendimento</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
+    <!-- ===================================================== -->
+    <!-- CONFIGURAÇÕES -->
+    <!-- ===================================================== -->
+
     <properties>
+
         <java.version>17</java.version>
+
+        <start-class>
+            universidade_atendimento.UniversidadeAtendimentoApplication
+        </start-class>
+
     </properties>
+
+    <!-- ===================================================== -->
+    <!-- DEPENDÊNCIAS -->
+    <!-- ===================================================== -->
 
     <dependencies>
 
         <!-- PostgreSQL / Supabase -->
-    <dependency>
-        <groupId>org.postgresql</groupId>
-        <artifactId>postgresql</artifactId>
-        <scope>runtime</scope>
-    </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
 
         <!-- Spring Data JPA -->
         <dependency>
@@ -45,6 +61,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc</artifactId>
+        </dependency>
+
+        <!-- E-mail / SMTP -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
         <!-- DevTools -->
@@ -73,21 +95,37 @@
             <artifactId>spring-boot-starter-webmvc-test</artifactId>
             <scope>test</scope>
         </dependency>
-       
+
     </dependencies>
 
+    <!-- ===================================================== -->
+    <!-- BUILD -->
+    <!-- ===================================================== -->
+
     <build>
+
         <plugins>
 
             <plugin>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-maven-plugin</artifactId>
-    <configuration>
-    <mainClass>universidade_atendimento.UniversidadeAtendimentoApplication</mainClass>
-</configuration>
-</plugin>
+
+                <groupId>org.springframework.boot</groupId>
+
+                <artifactId>
+                    spring-boot-maven-plugin
+                </artifactId>
+
+                <configuration>
+
+                    <mainClass>
+                        universidade_atendimento.UniversidadeAtendimentoApplication
+                    </mainClass>
+
+                </configuration>
+
+            </plugin>
 
         </plugins>
+
     </build>
 
 </project>

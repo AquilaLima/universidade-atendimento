@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Novo Usuário - Administração</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f8;
+            color: #333;
+        }
+
+        header {
+            background: #1f4e79;
+            color: white;
+            padding: 18px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #1f4e79;
+        }
+
+        .campo {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #1f4e79;
+        }
+
+        .informacao {
+            background: #e7f1ff;
+            color: #084298;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            font-size: 13px;
+        }
+
+        .erro {
+            background: #f8d7da;
+            color: #842029;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .acoes {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .botao {
+            display: inline-block;
+            padding: 11px 17px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .botao-salvar {
+            background: #198754;
+            color: white;
+        }
+
+        .botao-voltar {
+            background: #ddd;
+            color: #222;
+        }
+
+        #campoSenha {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 15px;
+            }
+
+            .acoes {
+                flex-direction: column;
+            }
+
+            .botao {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Administração</h1>
+</header>
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>Cadastrar Novo Usuário</h2>
+
+        <div class="informacao">
+            Para alunos, a senha será criada no primeiro acesso.<br>
+            Funcionários da Universidade receberão código temporário por e-mail.<br>
+            Administradores precisam possuir senha.
+        </div>
+
+        <div class="erro"
+             th:if="${erro}"
+             th:text="${erro}">
+        </div>
+
+        <form action="/admin/usuarios/novo"
+              method="post">
+
+            <div class="campo">
+                <label for="nome">
+                    Nome
+                </label>
+
+                <input type="text"
+                       id="nome"
+                       name="nome"
+                       placeholder="Nome do usuário"
+                       required>
+            </div>
+
+            <div class="campo">
+                <label for="email">
+                    E-mail
+                </label>
+
+                <input type="email"
+                       id="email"
+                       name="email"
+                       placeholder="usuario@universidade.com"
+                       required>
+            </div>
+
+            <div class="campo">
+                <label for="perfil">
+                    Perfil
+                </label>
+
+                <select id="perfil"
+                        name="perfil"
+                        onchange="atualizarCampos()"
+                        required>
+
+                    <option value="">
+                        Selecione
+                    </option>
+
+                    <option value="ALUNO">
+                        Aluno
+                    </option>
+
+                    <option value="UNIVERSIDADE">
+                        Universidade
+                    </option>
+
+                    <option value="ADM">
+                        Administrador
+                    </option>
+
+                </select>
+            </div>
+
+            <div class="campo"
+                 id="campoSenha">
+
+                <label for="senha">
+                    Senha do Administrador
+                </label>
+
+                <input type="password"
+                       id="senha"
+                       name="senha"
+                       placeholder="Digite a senha">
+            </div>
+
+            <div class="acoes">
+
+                <button type="submit"
+                        class="botao botao-salvar">
+
+                    Salvar usuário
+
+                </button>
+
+                <a href="/admin"
+                   class="botao botao-voltar">
+
+                    Voltar
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+    function atualizarCampos() {
+
+        const perfil =
+                document.getElementById("perfil").value;
+
+        const campoSenha =
+                document.getElementById("campoSenha");
+
+        const senha =
+                document.getElementById("senha");
+
+        if (perfil === "ADM") {
+
+            campoSenha.style.display = "block";
+
+            senha.required = true;
+
+        } else {
+
+            campoSenha.style.display = "none";
+
+            senha.required = false;
+
+            senha.value = "";
+        }
+    }
+
+</script>
+
+</body>
+
+</html>

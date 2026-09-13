@@ -191,7 +191,7 @@
     <div class="topo">
         <h1>Gerenciar FAQ</h1>
 
-        <a href="/universidade" class="voltar">
+        <a href="/admin" class="voltar">
             ← Voltar para o painel
         </a>
     </div>
@@ -201,7 +201,7 @@
 
         <h2>Nova pergunta</h2>
 
-        <form action="/universidade/faq/criar" method="post">
+        <form action="/admin/faq/criar" method="post">
 
             <div class="campo">
                 <label for="categoria">Categoria</label>
@@ -300,14 +300,14 @@
                     <div class="acoes">
 
                         <a
-                            th:href="@{/universidade/faq/editar/{id}(id=${item.id})}"
+                            th:href="@{/admin/faq/editar/{id}(id=${item.id})}"
                             class="botao botao-editar">
 
                             Editar
                         </a>
 
                         <form
-                            th:action="@{/universidade/faq/status/{id}(id=${item.id})}"
+                            th:action="@{/admin/faq/status/{id}(id=${item.id})}"
                             method="post">
 
                             <button
@@ -327,7 +327,7 @@
                         </form>
 
                         <form
-                            th:action="@{/universidade/faq/excluir/{id}(id=${item.id})}"
+                            th:action="@{/admin/faq/excluir/{id}(id=${item.id})}"
                             method="post"
                             onsubmit="return confirm('Deseja realmente excluir esta FAQ?');">
 

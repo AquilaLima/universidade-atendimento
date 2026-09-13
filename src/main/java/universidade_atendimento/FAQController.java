@@ -14,11 +14,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class FAQController {
 
     private final FAQRepository faqRepository;
+    private final UsuarioRepository usuarioRepository;
 
     public FAQController(
-            FAQRepository faqRepository) {
+            FAQRepository faqRepository,
+            UsuarioRepository usuarioRepository) {
 
         this.faqRepository = faqRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     // =====================================================
@@ -30,22 +33,34 @@ public class FAQController {
             Model model,
             HttpSession session) {
 
-        Usuario usuario =
-                (Usuario) session.getAttribute("usuario");
+        Long usuarioId =
+                (Long) session.getAttribute("usuarioId");
 
-        // Usuário não autenticado
-        if (usuario == null) {
-
+        if (usuarioId == null) {
             return "redirect:/login";
         }
 
-        // FAQ destinada ao aluno
-        if (!"ALUNO".equals(usuario.getPerfil())) {
+        Usuario usuario =
+                usuarioRepository
+                        .findById(usuarioId)
+                        .orElse(null);
 
-            return "redirect:/universidade";
+        if (usuario == null) {
+            session.invalidate();
+            return "redirect:/login";
         }
 
-        // Mostra somente perguntas ativas
+        if (!"ALUNO".equals(usuario.getPerfil())) {
+            return "redirect:/login";
+        }
+
+        if (!Boolean.TRUE.equals(usuario.getAtivo())) {
+            session.invalidate();
+            return "redirect:/login";
+        }
+
+        session.setAttribute("usuario", usuario);
+
         model.addAttribute(
                 "perguntas",
                 faqRepository
@@ -56,26 +71,20 @@ public class FAQController {
     }
 
     // =====================================================
-    // GERENCIAMENTO DA FAQ - UNIVERSIDADE
+    // GERENCIAMENTO DA FAQ - ADMINISTRADOR
     // =====================================================
 
-    @GetMapping("/universidade/faq")
+    @GetMapping("/admin/faq")
     public String gerenciarFAQ(
             HttpSession session,
             Model model) {
 
         Usuario usuario =
-                (Usuario) session.getAttribute("usuario");
+                obterAdminAtivo(session);
 
         if (usuario == null) {
-
+            session.invalidate();
             return "redirect:/login";
-        }
-
-        if (!"UNIVERSIDADE".equals(
-                usuario.getPerfil())) {
-
-            return "redirect:/usuario";
         }
 
         model.addAttribute(
@@ -84,14 +93,19 @@ public class FAQController {
                         .findAllByOrderByCategoriaAsc()
         );
 
-        return "universidade-faq";
+        model.addAttribute(
+                "usuario",
+                usuario
+        );
+
+        return "admin-faq";
     }
 
     // =====================================================
     // CRIAR NOVA PERGUNTA
     // =====================================================
 
-    @PostMapping("/universidade/faq/criar")
+    @PostMapping("/admin/faq/criar")
     public String criarFAQ(
             @RequestParam String categoria,
             @RequestParam String pergunta,
@@ -99,17 +113,11 @@ public class FAQController {
             HttpSession session) {
 
         Usuario usuario =
-                (Usuario) session.getAttribute("usuario");
+                obterAdminAtivo(session);
 
         if (usuario == null) {
-
+            session.invalidate();
             return "redirect:/login";
-        }
-
-        if (!"UNIVERSIDADE".equals(
-                usuario.getPerfil())) {
-
-            return "redirect:/usuario";
         }
 
         FAQ faq = new FAQ();
@@ -130,31 +138,25 @@ public class FAQController {
 
         faqRepository.save(faq);
 
-        return "redirect:/universidade/faq";
+        return "redirect:/admin/faq";
     }
 
     // =====================================================
     // TELA PARA EDITAR PERGUNTA
     // =====================================================
 
-    @GetMapping("/universidade/faq/editar/{id}")
+    @GetMapping("/admin/faq/editar/{id}")
     public String editarFAQ(
             @PathVariable Long id,
             HttpSession session,
             Model model) {
 
         Usuario usuario =
-                (Usuario) session.getAttribute("usuario");
+                obterAdminAtivo(session);
 
         if (usuario == null) {
-
+            session.invalidate();
             return "redirect:/login";
-        }
-
-        if (!"UNIVERSIDADE".equals(
-                usuario.getPerfil())) {
-
-            return "redirect:/usuario";
         }
 
         FAQ faq =
@@ -163,8 +165,7 @@ public class FAQController {
                         .orElse(null);
 
         if (faq == null) {
-
-            return "redirect:/universidade/faq";
+            return "redirect:/admin/faq";
         }
 
         model.addAttribute(
@@ -172,14 +173,19 @@ public class FAQController {
                 faq
         );
 
-        return "universidade-faq-editar";
+        model.addAttribute(
+                "usuario",
+                usuario
+        );
+
+        return "admin-faq-editar";
     }
 
     // =====================================================
     // SALVAR ALTERAÇÃO
     // =====================================================
 
-    @PostMapping("/universidade/faq/editar/{id}")
+    @PostMapping("/admin/faq/editar/{id}")
     public String salvarEdicaoFAQ(
             @PathVariable Long id,
             @RequestParam String categoria,
@@ -188,17 +194,11 @@ public class FAQController {
             HttpSession session) {
 
         Usuario usuario =
-                (Usuario) session.getAttribute("usuario");
+                obterAdminAtivo(session);
 
         if (usuario == null) {
-
+            session.invalidate();
             return "redirect:/login";
-        }
-
-        if (!"UNIVERSIDADE".equals(
-                usuario.getPerfil())) {
-
-            return "redirect:/usuario";
         }
 
         FAQ faq =
@@ -207,8 +207,7 @@ public class FAQController {
                         .orElse(null);
 
         if (faq == null) {
-
-            return "redirect:/universidade/faq";
+            return "redirect:/admin/faq";
         }
 
         faq.setCategoria(
@@ -225,30 +224,24 @@ public class FAQController {
 
         faqRepository.save(faq);
 
-        return "redirect:/universidade/faq";
+        return "redirect:/admin/faq";
     }
 
     // =====================================================
-    // ATIVAR / DESATIVAR
+    // ATIVAR / DESATIVAR FAQ
     // =====================================================
 
-    @PostMapping("/universidade/faq/status/{id}")
+    @PostMapping("/admin/faq/status/{id}")
     public String alterarStatus(
             @PathVariable Long id,
             HttpSession session) {
 
         Usuario usuario =
-                (Usuario) session.getAttribute("usuario");
+                obterAdminAtivo(session);
 
         if (usuario == null) {
-
+            session.invalidate();
             return "redirect:/login";
-        }
-
-        if (!"UNIVERSIDADE".equals(
-                usuario.getPerfil())) {
-
-            return "redirect:/usuario";
         }
 
         FAQ faq =
@@ -259,43 +252,77 @@ public class FAQController {
         if (faq != null) {
 
             faq.setAtiva(
-                    !Boolean.TRUE.equals(faq.getAtiva())
+                    !Boolean.TRUE.equals(
+                            faq.getAtiva()
+                    )
             );
 
             faqRepository.save(faq);
         }
 
-        return "redirect:/universidade/faq";
+        return "redirect:/admin/faq";
     }
 
     // =====================================================
-    // EXCLUIR
+    // EXCLUIR FAQ
     // =====================================================
 
-    @PostMapping("/universidade/faq/excluir/{id}")
+    @PostMapping("/admin/faq/excluir/{id}")
     public String excluirFAQ(
             @PathVariable Long id,
             HttpSession session) {
 
         Usuario usuario =
-                (Usuario) session.getAttribute("usuario");
+                obterAdminAtivo(session);
 
         if (usuario == null) {
-
+            session.invalidate();
             return "redirect:/login";
         }
 
-        if (!"UNIVERSIDADE".equals(
-                usuario.getPerfil())) {
-
-            return "redirect:/usuario";
-        }
-
         if (faqRepository.existsById(id)) {
-
             faqRepository.deleteById(id);
         }
 
-        return "redirect:/universidade/faq";
+        return "redirect:/admin/faq";
+    }
+
+    // =====================================================
+    // VALIDAÇÃO DO ADMINISTRADOR
+    // =====================================================
+
+    private Usuario obterAdminAtivo(
+            HttpSession session) {
+
+        Long usuarioId =
+                (Long) session.getAttribute("usuarioId");
+
+        if (usuarioId == null) {
+            return null;
+        }
+
+        Usuario usuario =
+                usuarioRepository
+                        .findById(usuarioId)
+                        .orElse(null);
+
+        if (usuario == null) {
+            return null;
+        }
+
+        if (!"ADM".equals(usuario.getPerfil())) {
+            return null;
+        }
+
+        if (!Boolean.TRUE.equals(usuario.getAtivo())) {
+            return null;
+        }
+
+        session.setAttribute(
+                "usuario",
+                usuario
+        );
+
+        return usuario;
     }
 }

@@ -1,179 +1,55 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Detalhes do Atendimento</title>
 
     <style>
-
-        * {
-            box-sizing: border-box;
-        }
-
         body {
-            margin: 0;
             font-family: Arial, sans-serif;
             background: #f4f6f8;
-            color: #333;
-        }
-
-        /* =========================
-           HEADER
-        ========================= */
-
-        header {
-            background: #1f4e79;
-            color: white;
-            padding: 20px 40px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-        }
-
-        header .header-conteudo {
-            max-width: 1100px;
-            margin: auto;
-
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-        }
-
-        header h1 {
             margin: 0;
-            font-size: 25px;
+            padding: 20px;
         }
-
-        header p {
-            margin: 5px 0 0;
-            opacity: 0.85;
-            font-size: 14px;
-        }
-
-        /* =========================
-           CONTAINER
-        ========================= */
 
         .container {
-            width: 92%;
-            max-width: 1100px;
-            margin: 30px auto;
+            max-width: 900px;
+            margin: auto;
         }
-
-        /* =========================
-           CARD
-        ========================= */
 
         .card {
             background: white;
-            padding: 28px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-
-            box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
         }
 
-        .card h2 {
+        h1,
+        h2 {
             margin-top: 0;
-            margin-bottom: 25px;
-            color: #1f4e79;
-            font-size: 20px;
         }
 
-        /* =========================
-           PROTOCOLO
-        ========================= */
-
-        .protocolo-box {
-            background: #eef3f8;
-            border-left: 5px solid #1f4e79;
-
-            padding: 18px;
-            border-radius: 6px;
-
-            margin-bottom: 25px;
+        .linha {
+            margin-bottom: 10px;
         }
 
-        .protocolo-label {
-            display: block;
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 5px;
-            text-transform: uppercase;
+        .rotulo {
             font-weight: bold;
-        }
-
-        .protocolo {
-            font-size: 22px;
-            font-weight: bold;
-            color: #1f4e79;
-        }
-
-        /* =========================
-           GRID DE INFORMAÇÕES
-        ========================= */
-
-        .informacoes {
-            display: grid;
-
-            grid-template-columns:
-                repeat(2, minmax(0, 1fr));
-
-            gap: 20px;
-        }
-
-        .campo {
-            background: #fafafa;
-
-            padding: 15px;
-
-            border: 1px solid #e5e5e5;
-
-            border-radius: 7px;
-        }
-
-        .campo strong {
-            display: block;
-
-            color: #666;
-
-            font-size: 12px;
-
-            text-transform: uppercase;
-
-            margin-bottom: 7px;
-        }
-
-        .campo span {
-            font-size: 15px;
-
-            color: #333;
-
-            word-break: break-word;
-        }
-
-        .campo.full {
-            grid-column: 1 / -1;
         }
 
         /* =========================
            STATUS
         ========================= */
 
-        .status-badge {
+        .status {
             display: inline-block;
-
-            padding: 7px 14px;
-
+            padding: 6px 12px;
             border-radius: 20px;
-
-            font-size: 12px;
-
+            font-size: 13px;
             font-weight: bold;
         }
 
@@ -183,701 +59,447 @@
         }
 
         .status-atendimento {
-            background: #cfe2ff;
-            color: #084298;
+            background: #dbeafe;
+            color: #1f4e79;
         }
 
         .status-resolvido {
-            background: #d1e7dd;
-            color: #0f5132;
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-fechado {
+            background: #e2e3e5;
+            color: #41464b;
         }
 
         .status-cancelado {
             background: #f8d7da;
-            color: #842029;
+            color: #721c24;
         }
 
         /* =========================
-           DESCRIÇÃO
+           CONVERSA
         ========================= */
 
-        .descricao {
-            background: #f8f9fa;
-
-            border: 1px solid #e5e5e5;
-
-            padding: 18px;
-
-            border-radius: 7px;
-
-            white-space: pre-wrap;
-
-            line-height: 1.6;
-
-            min-height: 100px;
-        }
-
-        /* =========================
-           ATUALIZAÇÃO DE STATUS
-        ========================= */
-
-        .status-form {
+        .conversa {
             display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 20px;
+        }
 
-            align-items: center;
+        .mensagem {
+            max-width: 70%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+        }
 
-            gap: 12px;
+        .mensagem-aluno {
+            align-self: flex-start;
+            background: #eef2ff;
+            border-left: 5px solid #1f4e79;
+        }
 
-            flex-wrap: wrap;
+        .mensagem-universidade {
+            align-self: flex-end;
+            background: #e6f7ed;
+            border-right: 5px solid #198754;
+        }
+
+        .mensagem-cabecalho {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 7px;
+            color: #1f4e79;
+        }
+
+        .mensagem-texto {
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .mensagem-data {
+            font-size: 11px;
+            color: #777;
+            margin-top: 8px;
+        }
+
+        .sem-mensagens {
+            color: #777;
+            font-style: italic;
+            padding: 10px 0;
+        }
+
+        /* =========================
+           FORMULÁRIOS
+        ========================= */
+
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            resize: vertical;
+            font-family: Arial, sans-serif;
         }
 
         select {
-            min-width: 220px;
-
-            padding: 11px 12px;
-
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
             border: 1px solid #ccc;
-
-            border-radius: 6px;
-
-            background: white;
-
-            font-size: 14px;
+            border-radius: 8px;
         }
 
-        /* =========================
-           BOTÕES
-        ========================= */
-
-        .botoes {
-            display: flex;
-
-            gap: 12px;
-
-            flex-wrap: wrap;
-        }
-
-        .botao {
-            display: inline-block;
-
-            padding: 11px 18px;
-
-            background: #1f4e79;
-
-            color: white;
-
-            text-decoration: none;
-
+        button {
+            padding: 12px 18px;
             border: none;
-
-            border-radius: 6px;
-
+            border-radius: 8px;
             cursor: pointer;
-
-            font-size: 14px;
-
-            font-weight: bold;
-
-            transition: 0.2s;
+            margin-top: 10px;
         }
 
-        .botao:hover {
-            background: #163a5c;
-
-            transform: translateY(-1px);
+        .btn-primary {
+            background: #2f6fed;
+            color: white;
         }
 
-        .botao-voltar {
-            background: #6c757d;
+        .btn-primary:hover {
+            opacity: 0.9;
         }
 
-        .botao-voltar:hover {
-            background: #545b62;
+        .btn-status {
+            background: #444;
+            color: white;
         }
 
-        .botao-sair {
-            background: #c0392b;
+        .btn-status:hover {
+            opacity: 0.9;
         }
 
-        .botao-sair:hover {
-            background: #922b21;
+        .btn-voltar {
+            display: inline-block;
+            text-decoration: none;
+            background: #ddd;
+            color: #222;
+            padding: 10px 16px;
+            border-radius: 8px;
         }
 
-        /* =========================
-           RODAPÉ
-        ========================= */
-
-        footer {
-            text-align: center;
-
-            padding: 25px;
-
-            color: #777;
-
-            font-size: 13px;
+        .btn-voltar:hover {
+            opacity: 0.9;
         }
 
-        /* =========================
-           RESPONSIVO
-        ========================= */
+        .aviso {
+            padding: 12px;
+            border-radius: 8px;
+            background: #fff3cd;
+            color: #856404;
+        }
 
         @media (max-width: 700px) {
 
-            header {
-                padding: 18px 20px;
-            }
-
-            header .header-conteudo {
-                align-items: flex-start;
-
-                flex-direction: column;
-            }
-
-            .container {
-                width: 94%;
-
-                margin-top: 20px;
+            .mensagem {
+                max-width: 100%;
             }
 
             .card {
-                padding: 20px;
+                padding: 18px;
             }
-
-            .informacoes {
-                grid-template-columns: 1fr;
-            }
-
-            .campo.full {
-                grid-column: auto;
-            }
-
-            .status-form {
-                flex-direction: column;
-
-                align-items: stretch;
-            }
-
-            select {
-                width: 100%;
-            }
-
-            .status-form .botao {
-                width: 100%;
-            }
-
         }
-        
-        /* =========================
-   RESPOSTA DA UNIVERSIDADE
-========================= */
-
-.resposta-box {
-    background: #eef3f8;
-    border-left: 5px solid #1f4e79;
-    border-radius: 7px;
-    padding: 18px;
-    margin-bottom: 20px;
-}
-
-.resposta-cabecalho {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
-}
-
-.resposta-cabecalho strong {
-    color: #1f4e79;
-    font-size: 16px;
-}
-
-.resposta-cabecalho span {
-    color: #777;
-    font-size: 12px;
-}
-
-.resposta-texto {
-    background: white;
-    padding: 18px;
-    border-radius: 6px;
-    line-height: 1.6;
-    white-space: pre-wrap;
-    border: 1px solid #ddd;
-}
-
-textarea {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-family: Arial, sans-serif;
-    font-size: 14px;
-    resize: vertical;
-    min-height: 130px;
-}
-
-textarea:focus {
-    outline: none;
-    border-color: #1f4e79;
-}
-
-.sem-resposta {
-    background: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffe69c;
-    padding: 18px;
-    border-radius: 7px;
-}
-
-.sem-resposta p {
-    margin-bottom: 0;
-}
-
     </style>
-
 </head>
-
 
 <body>
 
-
-<!-- =========================
-     HEADER
-========================= -->
-
-<header>
-
-    <div class="header-conteudo">
-
-        <div>
-
-            <h1>Detalhes do Atendimento</h1>
-
-            <p>
-                Sistema de Atendimento Universitário
-            </p>
-
-        </div>
-
-        <div>
-
-            <a href="/logout"
-               class="botao botao-sair">
-
-                Sair
-
-            </a>
-
-        </div>
-
-    </div>
-
-</header>
-
-
 <div class="container">
 
-
-    <!-- =========================
-         INFORMAÇÕES
-    ========================= -->
+    <!-- ===================================================== -->
+    <!-- DADOS DO ATENDIMENTO -->
+    <!-- ===================================================== -->
 
     <div class="card">
 
-        <h2>Informações do Atendimento</h2>
+        <h1>Detalhes do Atendimento</h1>
 
+        <div class="linha">
+            <span class="rotulo">Protocolo:</span>
+            <span th:text="${atendimento.protocolo}"></span>
+        </div>
 
-        <!-- PROTOCOLO -->
+        <div class="linha">
+            <span class="rotulo">Aluno:</span>
+            <span th:text="${atendimento.nome}"></span>
+        </div>
 
-        <div class="protocolo-box">
+        <div class="linha">
+            <span class="rotulo">E-mail:</span>
+            <span th:text="${atendimento.email}"></span>
+        </div>
 
-            <span class="protocolo-label">
-                Número do protocolo
+        <div class="linha">
+            <span class="rotulo">Telefone:</span>
+            <span th:text="${atendimento.telefone}"></span>
+        </div>
+
+        <div class="linha">
+            <span class="rotulo">Assunto:</span>
+            <span th:text="${atendimento.assunto}"></span>
+        </div>
+
+        <div class="linha">
+            <span class="rotulo">Categoria:</span>
+            <span th:text="${atendimento.categoria}"></span>
+        </div>
+
+        <div class="linha">
+            <span class="rotulo">Prioridade:</span>
+            <span th:text="${atendimento.prioridade}"></span>
+        </div>
+
+        <div class="linha">
+            <span class="rotulo">Status:</span>
+
+            <span class="status"
+                  th:text="${atendimento.status}"
+                  th:classappend="
+                    ${atendimento.status == 'ABERTO'} ? ' status-aberto' :
+                    (${atendimento.status == 'EM ATENDIMENTO'} ? ' status-atendimento' :
+                    (${atendimento.status == 'RESOLVIDO'} ? ' status-resolvido' :
+                    (${atendimento.status == 'FECHADO'} ? ' status-fechado' :
+                    (${atendimento.status == 'CANCELADO'} ? ' status-cancelado' : ''))))">
             </span>
-
-            <span class="protocolo"
-                  th:text="${atendimento.protocolo}">
-
-                AT-2026-0001
-
-            </span>
-
         </div>
 
+        <div class="linha">
+            <span class="rotulo">Descrição:</span>
 
-        <!-- GRID -->
-
-        <div class="informacoes">
-
-
-            <!-- ALUNO -->
-
-            <div class="campo">
-
-                <strong>Aluno</strong>
-
-                <span th:text="${atendimento.nome}">
-                    Nome do aluno
-                </span>
-
-            </div>
-
-
-            <!-- E-MAIL -->
-
-            <div class="campo">
-
-                <strong>E-mail</strong>
-
-                <span th:text="${atendimento.email}">
-                    aluno@email.com
-                </span>
-
-            </div>
-
-
-            <!-- TELEFONE -->
-
-            <div class="campo">
-
-                <strong>Telefone</strong>
-
-                <span th:text="${atendimento.telefone}">
-                    (11) 99999-9999
-                </span>
-
-            </div>
-
-
-            <!-- ASSUNTO -->
-
-            <div class="campo">
-
-                <strong>Assunto</strong>
-
-                <span th:text="${atendimento.assunto}">
-                    Assunto
-                </span>
-
-            </div>
-
-
-            <!-- CATEGORIA -->
-
-            <div class="campo">
-
-                <strong>Categoria</strong>
-
-                <span th:text="${atendimento.categoria}">
-                    Acadêmico
-                </span>
-
-            </div>
-
-
-            <!-- PRIORIDADE -->
-
-            <div class="campo">
-
-                <strong>Prioridade</strong>
-
-                <span th:text="${atendimento.prioridade}">
-                    NORMAL
-                </span>
-
-            </div>
-
-
-            <!-- STATUS -->
-
-            <div class="campo">
-
-                <strong>Status</strong>
-
-                <span
-                    class="status-badge"
-                    th:classappend="${atendimento.status == 'ABERTO'} ? ' status-aberto' :
-                                    (${atendimento.status == 'EM ATENDIMENTO'} ? ' status-atendimento' :
-                                    (${atendimento.status == 'RESOLVIDO'} ? ' status-resolvido' :
-                                    ' status-cancelado'))"
-                    th:text="${atendimento.status}">
-
-                    ABERTO
-
-                </span>
-
-            </div>
-
-
-            <!-- DATA ABERTURA -->
-
-            <div class="campo">
-
-                <strong>Data de abertura</strong>
-
-                <span th:text="${atendimento.dataAbertura}">
-                    2026-08-16
-                </span>
-
-            </div>
-
-
-            <!-- ÚLTIMA ATUALIZAÇÃO -->
-
-            <div class="campo">
-
-                <strong>Última atualização</strong>
-
-                <span th:text="${atendimento.dataAtualizacao}">
-                    2026-08-16
-                </span>
-
-            </div>
-
-
-            <!-- DESCRIÇÃO -->
-
-            <div class="campo full">
-
-                <strong>Descrição da solicitação</strong>
-
-                <div class="descricao"
-                     th:text="${atendimento.descricao}">
-
-                    Descrição do atendimento.
-
-                </div>
-
-            </div>
-
-
-        </div>
-
-    </div>
-    
-    <!-- =========================
-     RESPOSTA DA UNIVERSIDADE
-========================= -->
-
-<div class="card">
-
-    <h2>Resposta da Universidade</h2>
-
-    <!-- RESPOSTA JÁ REGISTRADA -->
-
-    <div th:if="${atendimento.resposta != null 
-                 and !#strings.isEmpty(atendimento.resposta)}">
-
-        <div class="resposta-box">
-
-            <div class="resposta-cabecalho">
-
-                <strong>
-                    Resposta da Universidade
-                </strong>
-
-                <span
-                    th:if="${atendimento.dataResposta != null}"
-                    th:text="${atendimento.dataResposta}">
-                    
-                    16/08/2026 18:00
-                    
-                </span>
-
-            </div>
-
-            <div class="resposta-texto"
-                 th:text="${atendimento.resposta}">
-
-                Resposta do atendimento.
-
-            </div>
-
+            <p th:text="${atendimento.descricao}"></p>
         </div>
 
     </div>
 
-
-    <!-- FORMULÁRIO SOMENTE UNIVERSIDADE -->
-
-    <div th:if="${session.usuario != null 
-                 and session.usuario.perfil == 'UNIVERSIDADE'}">
-
-        <form
-            th:action="@{/atendimentos/{id}/resposta(id=${atendimento.id})}"
-            method="post">
-
-            <label for="resposta">
-
-                Escreva uma resposta para o aluno:
-
-            </label>
-
-            <textarea
-                id="resposta"
-                name="resposta"
-                rows="6"
-                placeholder="Digite a resposta para o aluno..."
-                required></textarea>
-
-            <br><br>
-
-            <button
-                type="submit"
-                class="botao">
-
-                Enviar Resposta
-
-            </button>
-
-        </form>
-
-    </div>
-
-
-    <!-- MENSAGEM PARA ALUNO SEM RESPOSTA -->
-
-    <div th:if="${session.usuario != null 
-                 and session.usuario.perfil == 'ALUNO'
-                 and (atendimento.resposta == null 
-                 or #strings.isEmpty(atendimento.resposta))}"
-         class="sem-resposta">
-
-        <strong>
-            A universidade ainda não respondeu este atendimento.
-        </strong>
-
-        <p>
-            Assim que houver uma resposta, ela aparecerá nesta tela.
-        </p>
-
-    </div>
-
-</div>
-
-
-    <!-- =========================
-         ATUALIZAR STATUS
-         SOMENTE UNIVERSIDADE
-    ========================= -->
+    <!-- ===================================================== -->
+    <!-- ALTERAR STATUS - SOMENTE UNIVERSIDADE -->
+    <!-- ===================================================== -->
 
     <div class="card"
-         th:if="${session.usuario != null and session.usuario.perfil == 'UNIVERSIDADE'}">
+         th:if="${podeAtualizar}">
 
-        <h2>Gerenciar Atendimento</h2>
+        <h2>Atualizar Status</h2>
 
-        <p>
-            Atualize o status deste atendimento conforme o andamento da solicitação.
-        </p>
-
-
-        <form class="status-form"
-
-              th:action="@{/atendimentos/{id}/status(id=${atendimento.id})}"
-
+        <form th:action="@{'/atendimentos/' + ${atendimento.id} + '/status'}"
               method="post">
 
-
-            <select name="status">
+            <select name="status" required>
 
                 <option value="ABERTO"
                         th:selected="${atendimento.status == 'ABERTO'}">
-
-                    Aberto
-
+                    ABERTO
                 </option>
-
 
                 <option value="EM ATENDIMENTO"
                         th:selected="${atendimento.status == 'EM ATENDIMENTO'}">
-
-                    Em Atendimento
-
+                    EM ATENDIMENTO
                 </option>
-
 
                 <option value="RESOLVIDO"
                         th:selected="${atendimento.status == 'RESOLVIDO'}">
-
-                    Resolvido
-
+                    RESOLVIDO
                 </option>
 
+                <option value="FECHADO"
+                        th:selected="${atendimento.status == 'FECHADO'}">
+                    FECHADO
+                </option>
 
                 <option value="CANCELADO"
                         th:selected="${atendimento.status == 'CANCELADO'}">
-
-                    Cancelado
-
+                    CANCELADO
                 </option>
 
             </select>
 
-
             <button type="submit"
-                    class="botao">
-
-                Atualizar Status
-
+                    class="btn-status">
+                Atualizar status
             </button>
 
         </form>
 
     </div>
 
+    <!-- ===================================================== -->
+    <!-- REABRIR ATENDIMENTO - SOMENTE UNIVERSIDADE -->
+    <!-- ===================================================== -->
 
-    <!-- =========================
-         NAVEGAÇÃO
-    ========================= -->
+    <div class="card"
+         th:if="${podeAtualizar
+              and atendimento.status == 'RESOLVIDO'}">
+
+        <h2>Reabrir Atendimento</h2>
+
+        <p>
+            Este atendimento está resolvido.
+            Caso seja necessário continuar a conversa,
+            reabra o chamado.
+        </p>
+
+        <form th:action="@{'/atendimentos/'
+                + ${atendimento.id}
+                + '/reabrir'}"
+              method="post">
+
+            <button type="submit"
+                    class="btn-primary">
+                Reabrir atendimento
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- CONVERSA -->
+    <!-- ===================================================== -->
 
     <div class="card">
 
-        <div class="botoes">
+        <h2>Conversa do Atendimento</h2>
 
+        <div th:if="${#lists.isEmpty(mensagens)}"
+             class="sem-mensagens">
 
-            <!-- VOLTAR PARA ALUNO -->
+            Ainda não há mensagens neste atendimento.
 
-            <a th:if="${session.usuario != null and session.usuario.perfil == 'ALUNO'}"
+        </div>
 
-               href="/usuario"
+        <div class="conversa"
+             th:if="${!#lists.isEmpty(mensagens)}">
 
-               class="botao botao-voltar">
+            <div th:each="msg : ${mensagens}"
+                 class="mensagem"
+                 th:classappend="${msg.usuario.perfil == 'ALUNO'}
+                        ? ' mensagem-aluno'
+                        : ' mensagem-universidade'">
 
-                ← Voltar para Meus Atendimentos
+                <div class="mensagem-cabecalho">
 
-            </a>
+                    <span th:if="${msg.usuario.perfil == 'ALUNO'}">
+                        Aluno
+                    </span>
 
+                    <span th:if="${msg.usuario.perfil == 'UNIVERSIDADE'}">
+                        Universidade
+                    </span>
 
-            <!-- VOLTAR PARA UNIVERSIDADE -->
+                </div>
 
-            <a th:if="${session.usuario != null and session.usuario.perfil == 'UNIVERSIDADE'}"
+                <div class="mensagem-texto"
+                     th:text="${msg.mensagem}">
+                </div>
 
-               href="/universidade"
+                <div class="mensagem-data"
+                     th:text="${#temporals.format(
+                         msg.dataHora,
+                         'dd/MM/yyyy HH:mm'
+                     )}">
+                </div>
 
-               class="botao botao-voltar">
-
-                ← Voltar para Painel
-
-            </a>
-
+            </div>
 
         </div>
 
     </div>
 
+    <!-- ===================================================== -->
+    <!-- ENVIAR NOVA MENSAGEM -->
+    <!-- ===================================================== -->
+
+    <div class="card"
+     th:if="${atendimento.status == 'ABERTO'
+          or atendimento.status == 'EM ATENDIMENTO'
+          or atendimento.status == 'RESOLVIDO'}">
+
+        <h2>Enviar mensagem</h2>
+
+        <form th:action="@{'/atendimentos/' + ${atendimento.id} + '/mensagem'}"
+              method="post">
+
+            <textarea
+                    name="mensagem"
+                    placeholder="Digite sua mensagem..."
+                    required></textarea>
+
+            <button type="submit"
+                    class="btn-primary">
+                Enviar
+            </button>
+
+        </form>
+
+    </div>
+
+<!-- ===================================================== -->
+<!-- ATENDIMENTO SEM NOVAS INTERAÇÕES -->
+<!-- ===================================================== -->
+
+<div class="card"
+     th:if="${atendimento.status == 'FECHADO'
+          or atendimento.status == 'CANCELADO'}">
+
+    <div class="aviso">
+
+        <!-- FECHADO -->
+
+        <div th:if="${atendimento.status == 'FECHADO'}">
+
+            <strong>
+                Atendimento fechado.
+            </strong>
+
+            <br>
+
+            Este chamado está encerrado
+            e não aceita novas mensagens.
+
+        </div>
+
+
+        <!-- CANCELADO -->
+
+        <div th:if="${atendimento.status == 'CANCELADO'}">
+
+            <strong>
+                Atendimento cancelado.
+            </strong>
+
+            <br>
+
+            Este chamado foi cancelado
+            e não aceita novas mensagens.
+
+        </div>
+
+    </div>
 
 </div>
 
+    <!-- ===================================================== -->
+    <!-- VOLTAR -->
+    <!-- ===================================================== -->
 
-<footer>
+    <a class="btn-voltar"
+       th:href="${voltar}">
+        Voltar
+    </a>
 
-    Sistema de Atendimento Universitário
-
-</footer>
-
+</div>
 
 </body>
-
 </html>

@@ -1,9 +1,13 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Login - Sistema de Atendimento</title>
 
@@ -35,7 +39,6 @@
         }
 
         .login-card {
-
             background-color: white;
 
             padding: 35px;
@@ -77,7 +80,6 @@
         }
 
         .tipo-login {
-
             display: flex;
 
             margin-bottom: 25px;
@@ -90,10 +92,9 @@
         }
 
         .tipo-login button {
+            width: 33.333%;
 
-            width: 50%;
-
-            padding: 12px;
+            padding: 12px 6px;
 
             border: none;
 
@@ -104,10 +105,11 @@
             font-weight: bold;
 
             cursor: pointer;
+
+            font-size: 13px;
         }
 
         .tipo-login button.ativo {
-
             background-color: #1f4e79;
 
             color: white;
@@ -118,7 +120,6 @@
         }
 
         label {
-
             display: block;
 
             margin-bottom: 7px;
@@ -129,7 +130,6 @@
         }
 
         input {
-
             width: 100%;
 
             padding: 12px;
@@ -142,7 +142,6 @@
         }
 
         input:focus {
-
             outline: none;
 
             border-color: #1f4e79;
@@ -151,7 +150,6 @@
         }
 
         .botao {
-
             width: 100%;
 
             padding: 12px;
@@ -176,7 +174,6 @@
         }
 
         .erro {
-
             background-color: #f8d7da;
 
             color: #842029;
@@ -193,7 +190,6 @@
         }
 
         .informacao {
-
             background-color: #e7f1ff;
 
             color: #084298;
@@ -210,7 +206,6 @@
         }
 
         .rodape {
-
             text-align: center;
 
             color: #777;
@@ -234,6 +229,10 @@
                 padding: 25px;
             }
 
+            .tipo-login button {
+                font-size: 11px;
+                padding: 12px 4px;
+            }
         }
 
     </style>
@@ -260,6 +259,7 @@
 
         </div>
 
+
         <!-- =========================
              MENSAGEM DE ERRO
         ========================== -->
@@ -272,6 +272,7 @@
             Dados inválidos.
 
         </div>
+
 
         <!-- =========================
              SELEÇÃO DO PERFIL
@@ -289,12 +290,23 @@
 
             </button>
 
+
             <button
                     type="button"
                     id="btnUniversidade"
                     onclick="mostrarUniversidade()">
 
                 Universidade
+
+            </button>
+
+
+            <button
+                    type="button"
+                    id="btnAdmin"
+                    onclick="mostrarAdmin()">
+
+                Administrador
 
             </button>
 
@@ -318,6 +330,7 @@
 
             </div>
 
+
             <form
                     action="/login/aluno"
                     method="post">
@@ -338,6 +351,7 @@
 
                 </div>
 
+
                 <button
                         type="submit"
                         class="botao">
@@ -352,38 +366,91 @@
 
 
         <!-- =====================================================
-             LOGIN DA UNIVERSIDADE
+     LOGIN DA UNIVERSIDADE
+====================================================== -->
+
+<div
+        id="loginUniversidade"
+        class="oculto">
+
+    <div class="informacao">
+
+        Área destinada aos funcionários da Universidade.
+
+        <br>
+
+        Informe seu e-mail institucional para receber
+        um código temporário de acesso.
+
+    </div>
+
+    <form
+            action="/login/universidade"
+            method="post">
+
+        <div class="campo">
+
+            <label for="emailUniversidade">
+                E-mail institucional
+            </label>
+
+            <input
+                    type="email"
+                    id="emailUniversidade"
+                    name="email"
+                    placeholder="Digite seu e-mail institucional"
+                    autocomplete="email"
+                    required>
+
+        </div>
+
+        <button
+                type="submit"
+                class="botao">
+
+            Enviar código
+
+        </button>
+
+    </form>
+
+</div>
+
+
+        <!-- =====================================================
+             LOGIN DO ADMINISTRADOR
         ====================================================== -->
 
         <div
-                id="loginUniversidade"
+                id="loginAdmin"
                 class="oculto">
 
             <div class="informacao">
 
-                Área destinada aos usuários institucionais.
+                Área de administração do sistema.
 
                 <br>
 
-                Informe o e-mail e a credencial de acesso.
+                Informe o e-mail e a senha do administrador.
 
             </div>
 
+
             <form
-                    action="/login/universidade"
+                    action="/login/admin"
                     method="post">
 
                 <div class="campo">
 
-                    <label for="emailUniversidade">
+                    <label for="emailAdmin">
                         E-mail
                     </label>
 
                     <input
                             type="email"
-                            id="emailUniversidade"
+                            id="emailAdmin"
                             name="email"
-                            placeholder="Digite o e-mail institucional"
+                            placeholder="E-mail do administrador"
                             autocomplete="email"
                             required>
 
@@ -392,15 +459,15 @@
 
                 <div class="campo">
 
-                    <label for="credencial">
-                        Credencial institucional
+                    <label for="senhaAdmin">
+                        Senha
                     </label>
 
                     <input
                             type="password"
-                            id="credencial"
-                            name="credencial"
-                            placeholder="Digite a credencial"
+                            id="senhaAdmin"
+                            name="senha"
+                            placeholder="Digite sua senha"
                             autocomplete="current-password"
                             required>
 
@@ -432,48 +499,79 @@
 
 
 <!-- =====================================================
-     JAVASCRIPT PARA ALTERNAR ENTRE ALUNO E UNIVERSIDADE
+     JAVASCRIPT PARA ALTERNAR OS PERFIS
 ====================================================== -->
 
 <script>
 
-    function mostrarAluno() {
+    function ocultarTodos() {
 
         document
                 .getElementById("loginAluno")
-                .classList.remove("oculto");
+                .classList.add("oculto");
 
         document
                 .getElementById("loginUniversidade")
                 .classList.add("oculto");
 
         document
+                .getElementById("loginAdmin")
+                .classList.add("oculto");
+
+
+        document
                 .getElementById("btnAluno")
-                .classList.add("ativo");
+                .classList.remove("ativo");
 
         document
                 .getElementById("btnUniversidade")
                 .classList.remove("ativo");
+
+        document
+                .getElementById("btnAdmin")
+                .classList.remove("ativo");
+    }
+
+
+    function mostrarAluno() {
+
+        ocultarTodos();
+
+        document
+                .getElementById("loginAluno")
+                .classList.remove("oculto");
+
+        document
+                .getElementById("btnAluno")
+                .classList.add("ativo");
     }
 
 
     function mostrarUniversidade() {
 
+        ocultarTodos();
+
         document
                 .getElementById("loginUniversidade")
                 .classList.remove("oculto");
 
         document
-                .getElementById("loginAluno")
-                .classList.add("oculto");
-
-        document
                 .getElementById("btnUniversidade")
                 .classList.add("ativo");
+    }
+
+
+    function mostrarAdmin() {
+
+        ocultarTodos();
 
         document
-                .getElementById("btnAluno")
-                .classList.remove("ativo");
+                .getElementById("loginAdmin")
+                .classList.remove("oculto");
+
+        document
+                .getElementById("btnAdmin")
+                .classList.add("ativo");
     }
 
 </script>

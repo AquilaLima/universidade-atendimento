@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Administração - Sistema de Atendimento</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f8;
+            color: #333;
+        }
+
+        /* ==========================================
+           HEADER
+        ========================================== */
+
+        header {
+            background: #1f4e79;
+            color: white;
+            padding: 18px 5%;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .logo h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .logo p {
+            margin: 5px 0 0;
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .header-acoes {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* ==========================================
+           CONTAINER
+        ========================================== */
+
+        .container {
+            width: 92%;
+            max-width: 1300px;
+            margin: 30px auto;
+        }
+
+        /* ==========================================
+           CARDS
+        ========================================== */
+
+        .card {
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 10px;
+
+            margin-bottom: 25px;
+
+            box-shadow:
+                0 2px 10px rgba(0, 0, 0, 0.07);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: #1f4e79;
+        }
+
+        /* ==========================================
+           BOAS-VINDAS
+        ========================================== */
+
+        .boas-vindas {
+            border-left: 5px solid #1f4e79;
+        }
+
+        .boas-vindas p {
+            color: #666;
+            margin-bottom: 0;
+        }
+
+        /* ==========================================
+           BOTÕES
+        ========================================== */
+
+        .botao {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 10px 16px;
+
+            border: none;
+
+            border-radius: 6px;
+
+            text-decoration: none;
+
+            font-size: 13px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            background: #1f4e79;
+            color: white;
+
+            transition: 0.2s;
+        }
+
+        .botao:hover {
+            background: #163a5c;
+        }
+
+        .botao-faq {
+            background: #6f42c1;
+        }
+
+        .botao-faq:hover {
+            background: #59339d;
+        }
+
+        .botao-sair {
+            background: #c0392b;
+        }
+
+        .botao-sair:hover {
+            background: #922b21;
+        }
+
+        .botao-ativar {
+            background: #198754;
+        }
+
+        .botao-ativar:hover {
+            background: #146c43;
+        }
+
+        .botao-desativar {
+            background: #dc3545;
+        }
+
+        .botao-desativar:hover {
+            background: #b02a37;
+        }
+
+        .botao-editar {
+            background: #e67e22;
+        }
+
+        .botao-editar:hover {
+            background: #ca6f1e;
+        }
+
+        /* ==========================================
+           INDICADORES
+        ========================================== */
+
+        .indicadores {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 18px;
+        }
+
+        .indicador {
+            padding: 22px;
+
+            border-radius: 10px;
+
+            background: #f7f9fb;
+
+            border:
+                1px solid #e1e7ed;
+
+            text-align: center;
+        }
+
+        .indicador h3 {
+            margin: 0 0 10px;
+
+            color: #555;
+
+            font-size: 14px;
+        }
+
+        .numero {
+            font-size: 30px;
+            font-weight: bold;
+            color: #1f4e79;
+        }
+
+        /* ==========================================
+           BUSCA
+        ========================================== */
+
+        .busca-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .busca-form input {
+            flex: 1;
+
+            min-width: 250px;
+
+            padding: 11px 14px;
+
+            border:
+                1px solid #ccc;
+
+            border-radius: 6px;
+
+            font-size: 14px;
+
+            outline: none;
+        }
+
+        .busca-form input:focus {
+            border-color: #1f4e79;
+        }
+
+        /* ==========================================
+           TABELA
+        ========================================== */
+
+        .tabela-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 900px;
+        }
+
+        th {
+            background: #1f4e79;
+            color: white;
+
+            padding: 13px;
+
+            text-align: left;
+
+            font-size: 13px;
+        }
+
+        td {
+            padding: 13px;
+
+            border-bottom:
+                1px solid #e2e2e2;
+
+            font-size: 13px;
+        }
+
+        tbody tr:hover {
+            background: #f7f9fb;
+        }
+
+        /* ==========================================
+           STATUS
+        ========================================== */
+
+        .status {
+            display: inline-block;
+
+            padding: 6px 11px;
+
+            border-radius: 15px;
+
+            font-size: 11px;
+
+            font-weight: bold;
+        }
+
+        .status-ativo {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-inativo {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        /* ==========================================
+           PERFIL
+        ========================================== */
+
+        .perfil {
+            display: inline-block;
+
+            padding: 6px 10px;
+
+            border-radius: 15px;
+
+            font-size: 11px;
+            font-weight: bold;
+
+            background: #e7f1ff;
+            color: #084298;
+        }
+
+        .perfil-adm {
+            background: #e2d9f3;
+            color: #432874;
+        }
+
+        .perfil-universidade {
+            background: #cff4fc;
+            color: #055160;
+        }
+
+        .perfil-aluno {
+            background: #fff3cd;
+            color: #664d03;
+        }
+
+        /* ==========================================
+           AÇÕES
+        ========================================== */
+
+        .acoes {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        form {
+            margin: 0;
+        }
+
+        .sua-conta {
+            font-size: 12px;
+            color: #777;
+            font-weight: bold;
+        }
+
+        /* ==========================================
+           VAZIO
+        ========================================== */
+
+        .sem-resultados {
+            padding: 30px;
+            text-align: center;
+            color: #777;
+        }
+
+        /* ==========================================
+           FOOTER
+        ========================================== */
+
+        footer {
+            text-align: center;
+
+            padding: 25px;
+
+            color: #777;
+
+            font-size: 13px;
+        }
+
+        /* ==========================================
+           RESPONSIVO
+        ========================================== */
+
+        @media (max-width: 900px) {
+
+            .indicadores {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 15px;
+
+                flex-direction: column;
+
+                align-items: flex-start;
+
+                gap: 15px;
+            }
+
+            .header-acoes {
+                width: 100%;
+
+                flex-direction: column;
+
+                align-items: stretch;
+            }
+
+            .header-acoes .botao {
+                width: 100%;
+            }
+
+            .container {
+                width: 95%;
+                margin: 20px auto;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            .indicadores {
+                grid-template-columns: 1fr;
+            }
+
+            .busca-form {
+                flex-direction: column;
+            }
+
+            .busca-form input,
+            .busca-form .botao {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+<!-- ============================================= -->
+<!-- HEADER -->
+<!-- ============================================= -->
+
+<header>
+
+    <div class="logo">
+
+        <h1>
+            Administração
+        </h1>
+
+        <p>
+            Sistema de Atendimento Universitário
+        </p>
+
+    </div>
+
+
+    <div class="header-acoes">
+
+        <a href="/admin/faq"
+           class="botao botao-faq">
+
+            📚 Gerenciar FAQ
+
+        </a>
+
+
+        <a href="/logout"
+           class="botao botao-sair">
+
+            Sair
+
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- ============================================= -->
+<!-- CONTEÚDO -->
+<!-- ============================================= -->
+
+<div class="container">
+
+
+    <!-- ========================================= -->
+    <!-- BOAS-VINDAS -->
+    <!-- ========================================= -->
+
+    <div class="card boas-vindas">
+
+        <h2>
+
+            Olá,
+
+            <span th:text="${admin.nome}">
+                Administrador
+            </span>!
+
+        </h2>
+
+        <p>
+            Utilize este painel para administrar
+            os usuários e os acessos ao sistema.
+        </p>
+
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- INDICADORES -->
+    <!-- ========================================= -->
+
+    <div class="card">
+
+        <h2>
+            Resumo de Usuários
+        </h2>
+
+
+        <div class="indicadores">
+
+
+            <div class="indicador">
+
+                <h3>
+                    Total de Usuários
+                </h3>
+
+                <div class="numero"
+                     th:text="${totalUsuarios}">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+            <div class="indicador">
+
+                <h3>
+                    Usuários Ativos
+                </h3>
+
+                <div class="numero"
+                     th:text="${usuariosAtivos}">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+            <div class="indicador">
+
+                <h3>
+                    Alunos
+                </h3>
+
+                <div class="numero"
+                     th:text="${totalAlunos}">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+            <div class="indicador">
+
+                <h3>
+                    Universidade
+                </h3>
+
+                <div class="numero"
+                     th:text="${totalUniversidade}">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- BUSCA -->
+    <!-- ========================================= -->
+
+    <div class="card">
+
+        <h2>
+            🔎 Localizar Usuário
+        </h2>
+
+
+        <form
+            class="busca-form"
+            method="get"
+            action="/admin">
+
+            <input
+                type="text"
+                name="busca"
+                th:value="${busca}"
+                placeholder="Digite o nome ou e-mail do usuário">
+
+
+            <button
+                type="submit"
+                class="botao">
+
+                Buscar
+
+            </button>
+
+
+            <a href="/admin"
+               class="botao"
+               th:if="${busca != null and !busca.isBlank()}">
+
+                Limpar
+
+            </a>
+
+        </form>
+
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- USUÁRIOS -->
+    <!-- ========================================= -->
+
+    <div class="card">
+
+        <h2>
+            👥 Usuários do Sistema
+        </h2>
+
+
+        <div style="margin-bottom: 20px;">
+
+            <a href="/admin/usuarios/novo"
+               class="botao">
+
+                ➕ Cadastrar usuário
+
+            </a>
+
+        </div>
+
+
+        <div class="tabela-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>Nome</th>
+
+                        <th>E-mail</th>
+
+                        <th>Perfil</th>
+
+                        <th>Cadastro</th>
+
+                        <th>Status</th>
+
+                        <th>Ações</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    <tr th:each="usuario : ${usuarios}">
+
+
+                        <!-- ID -->
+
+                        <td th:text="${usuario.id}">
+                            1
+                        </td>
+
+
+                        <!-- NOME -->
+
+                        <td>
+
+                            <span th:if="${usuario.nome != null
+                                  and !usuario.nome.isBlank()}"
+                                  th:text="${usuario.nome}">
+
+                                Nome
+
+                            </span>
+
+                            <span th:if="${usuario.nome == null
+                                  or usuario.nome.isBlank()}">
+
+                                Não informado
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- EMAIL -->
+
+                        <td th:text="${usuario.email}">
+
+                            usuario@email.com
+
+                        </td>
+
+
+                        <!-- PERFIL -->
+
+                        <td>
+
+                            <span
+                                class="perfil"
+
+                                th:classappend="
+                                    ${usuario.perfil == 'ADM'}
+                                    ? ' perfil-adm'
+                                    :
+                                    (${usuario.perfil == 'UNIVERSIDADE'}
+                                    ? ' perfil-universidade'
+                                    :
+                                    ' perfil-aluno')
+                                "
+
+                                th:text="${usuario.perfil}">
+
+                                ALUNO
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- CADASTRO -->
+
+                        <td>
+
+                            <span
+                                th:if="${usuario.cadastroFinalizado}">
+
+                                Finalizado
+
+                            </span>
+
+
+                            <span
+                                th:unless="${usuario.cadastroFinalizado}">
+
+                                Pendente
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- STATUS -->
+
+                        <td>
+
+                            <span
+                                th:if="${usuario.ativo}"
+                                class="status status-ativo">
+
+                                ATIVO
+
+                            </span>
+
+
+                            <span
+                                th:unless="${usuario.ativo}"
+                                class="status status-inativo">
+
+                                INATIVO
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- AÇÕES -->
+
+                        <td>
+
+                            <div class="acoes">
+
+
+                                <!-- ======================= -->
+                                <!-- EDITAR -->
+                                <!-- ======================= -->
+
+                                <a
+                                    th:href="@{/admin/usuarios/{id}/editar(id=${usuario.id})}"
+                                    class="botao botao-editar">
+
+                                    Editar
+
+                                </a>
+
+
+                                <!-- ======================= -->
+                                <!-- PRÓPRIA CONTA -->
+                                <!-- ======================= -->
+
+                                <span
+                                    th:if="${usuario.id == admin.id}"
+                                    class="sua-conta">
+
+                                    Sua conta
+
+                                </span>
+
+
+                                <!-- ======================= -->
+                                <!-- USUÁRIO ATIVO -->
+                                <!-- ======================= -->
+
+                                <form
+                                    th:if="${usuario.id != admin.id
+                                         and usuario.ativo}"
+
+                                    th:action="@{/admin/usuarios/{id}/status(id=${usuario.id})}"
+
+                                    method="post">
+
+                                    <button
+                                        type="submit"
+                                        class="botao botao-desativar"
+
+                                        onclick="return confirm(
+                                            'Deseja realmente desativar este usuário?'
+                                        )">
+
+                                        Desativar
+
+                                    </button>
+
+                                </form>
+
+
+                                <!-- ======================= -->
+                                <!-- USUÁRIO INATIVO -->
+                                <!-- ======================= -->
+
+                                <form
+                                    th:if="${usuario.id != admin.id
+                                         and !usuario.ativo}"
+
+                                    th:action="@{/admin/usuarios/{id}/status(id=${usuario.id})}"
+
+                                    method="post">
+
+                                    <button
+                                        type="submit"
+                                        class="botao botao-ativar">
+
+                                        Ativar
+
+                                    </button>
+
+                                </form>
+
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- ================================= -->
+                    <!-- SEM RESULTADOS -->
+                    <!-- ================================= -->
+
+                    <tr th:if="${#lists.isEmpty(usuarios)}">
+
+                        <td
+                            colspan="7"
+                            class="sem-resultados">
+
+                            Nenhum usuário encontrado.
+
+                        </td>
+
+                    </tr>
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<footer>
+
+    Sistema de Atendimento Universitário
+
+</footer>
+
+
+</body>
+
+</html>

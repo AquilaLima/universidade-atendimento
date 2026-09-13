@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Editar Usuário - Administração</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f8;
+            color: #333;
+        }
+
+        header {
+            background: #1f4e79;
+            color: white;
+            padding: 18px 5%;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #1f4e79;
+        }
+
+        .campo {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .erro {
+            background: #f8d7da;
+            color: #842029;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .informacao {
+            background: #e7f1ff;
+            color: #084298;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .acoes {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .botao {
+            padding: 11px 17px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .botao-salvar {
+            background: #198754;
+            color: white;
+        }
+
+        .botao-voltar {
+            background: #ddd;
+            color: #222;
+        }
+
+        #campoSenha {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .acoes {
+                flex-direction: column;
+            }
+
+            .botao {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Administração</h1>
+</header>
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>Editar Usuário</h2>
+
+        <div class="informacao">
+            Se o perfil for alterado, o sistema ajustará automaticamente
+            a forma de autenticação do usuário.
+        </div>
+
+        <div class="erro"
+             th:if="${erro}"
+             th:text="${erro}">
+        </div>
+
+        <form th:action="@{/admin/usuarios/{id}/editar(id=${usuario.id})}"
+              method="post">
+
+            <div class="campo">
+
+                <label for="nome">
+                    Nome
+                </label>
+
+                <input type="text"
+                       id="nome"
+                       name="nome"
+                       th:value="${usuario.nome}"
+                       required>
+
+            </div>
+
+            <div class="campo">
+
+                <label for="email">
+                    E-mail
+                </label>
+
+                <input type="email"
+                       id="email"
+                       name="email"
+                       th:value="${usuario.email}"
+                       required>
+
+            </div>
+
+            <div class="campo">
+
+                <label for="perfil">
+                    Perfil
+                </label>
+
+                <select id="perfil"
+                        name="perfil"
+                        onchange="atualizarCampos()"
+                        required>
+
+                    <option value="ALUNO"
+                            th:selected="${usuario.perfil == 'ALUNO'}">
+                        Aluno
+                    </option>
+
+                    <option value="UNIVERSIDADE"
+                            th:selected="${usuario.perfil == 'UNIVERSIDADE'}">
+                        Universidade
+                    </option>
+
+                    <option value="ADM"
+                            th:selected="${usuario.perfil == 'ADM'}">
+                        Administrador
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="campo"
+                 id="campoSenha">
+
+                <label for="senha">
+                    Nova senha do ADM
+                </label>
+
+                <input type="password"
+                       id="senha"
+                       name="senha"
+                       placeholder="Deixe em branco para manter a atual">
+
+            </div>
+
+            <div class="acoes">
+
+                <button type="submit"
+                        class="botao botao-salvar">
+
+                    Salvar alterações
+
+                </button>
+
+                <a href="/admin"
+                   class="botao botao-voltar">
+
+                    Voltar
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+    function atualizarCampos() {
+
+        const perfil =
+                document.getElementById("perfil").value;
+
+        const campoSenha =
+                document.getElementById("campoSenha");
+
+        if (perfil === "ADM") {
+
+            campoSenha.style.display = "block";
+
+        } else {
+
+            campoSenha.style.display = "none";
+        }
+    }
+
+    atualizarCampos();
+
+</script>
+
+</body>
+
+</html>

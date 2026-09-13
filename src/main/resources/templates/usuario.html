@@ -1,431 +1,1460 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
-  <head>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>Área do Aluno - Atendimento</title>
+
     <style>
-      * {
-        box-sizing: border-box;
-      }
 
-      body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #f4f6f8;
-        color: #333;
-      }
+        * {
+            box-sizing: border-box;
+        }
 
-      /* =========================
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #333;
+        }
+
+        /* =========================
            HEADER
         ========================= */
-      header {
-        background: #1f4e79;
-        color: white;
-        padding: 20px 40px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
 
-      header h1 {
-        margin: 0;
-        font-size: 26px;
-      }
-
-      header p {
-        margin: 5px 0 0;
-        opacity: 0.9;
-      }
-
-      /* =========================
-           CONTAINER
-        ========================= */
-      .container {
-        max-width: 1200px;
-        margin: 30px auto;
-        padding: 0 20px;
-      }
-
-      /* =========================
-           CARDS
-        ========================= */
-      .card {
-        background: white;
-        padding: 25px;
-        margin-bottom: 25px;
-        border-radius: 10px;
-        box-shadow:
-          0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      .card h2 {
-        margin-top: 0;
-        color: #1f4e79;
-      }
-
-      /* =========================
-           BOAS VINDAS
-        ========================= */
-      .boas-vindas {
-        display: flex;
-        align-items: center;
-        gap: 18px;
-      }
-
-      .avatar {
-        width: 55px;
-        height: 55px;
-        background: #1f4e79;
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        font-weight: bold;
-      }
-
-      .boas-vindas h2 {
-        margin: 0;
-      }
-
-      .boas-vindas p {
-        margin: 6px 0 0;
-        color: #666;
-      }
-
-      /* =========================
-           BOTOES
-        ========================= */
-      .botoes {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-
-      .botao {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 12px 18px;
-        background: #1f4e79;
-        color: white;
-        text-decoration: none;
-        border-radius: 6px;
-        font-weight: bold;
-        transition: 0.2s;
-      }
-
-      .botao:hover {
-        background: #163a5c;
-        transform: translateY(-1px);
-      }
-
-      .botao-faq {
-        background: #6f42c1;
-      }
-
-      .botao-faq:hover {
-        background: #59339d;
-      }
-
-      .botao-sair {
-        background: #c0392b;
-      }
-
-      .botao-sair:hover {
-        background: #922b21;
-      }
-
-      .botao-detalhes {
-        padding: 8px 12px;
-        font-size: 13px;
-      }
-
-      /* =========================
-           FAQ DESTAQUE
-        ========================= */
-      .faq-destaque {
-        background: linear-gradient(135deg,
-            #eef3f8,
-            #f5f0ff);
-        border-left: 5px solid #6f42c1;
-      }
-
-      .faq-destaque h2 {
-        color: #6f42c1;
-      }
-
-      .faq-destaque p {
-        color: #666;
-        line-height: 1.5;
-      }
-
-      /* =========================
-           TABELA
-        ========================= */
-      .table-container {
-        overflow-x: auto;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 14px;
-      }
-
-      th {
-        background: #1f4e79;
-        color: white;
-        padding: 13px;
-        text-align: left;
-      }
-
-      td {
-        padding: 12px;
-        border-bottom:
-          1px solid #ddd;
-      }
-
-      tr:hover {
-        background: #f7f9fb;
-      }
-
-      /* =========================
-           STATUS
-        ========================= */
-      .status-badge {
-        display: inline-block;
-        padding: 6px 12px;
-        border-radius: 15px;
-        font-weight: bold;
-        font-size: 12px;
-        white-space: nowrap;
-      }
-
-      .status-aberto {
-        background: #fff3cd;
-        color: #856404;
-      }
-
-      .status-atendimento {
-        background: #cfe2ff;
-        color: #084298;
-      }
-
-      .status-resolvido {
-        background: #d1e7dd;
-        color: #0f5132;
-      }
-
-      .status-cancelado {
-        background: #f8d7da;
-        color: #842029;
-      }
-
-      /* =========================
-           SEM ATENDIMENTOS
-        ========================= */
-      .sem-atendimentos {
-        text-align: center;
-        padding: 30px;
-        color: #777;
-      }
-
-      .sem-atendimentos-icon {
-        font-size: 40px;
-        margin-bottom: 10px;
-      }
-
-      /* =========================
-           FOOTER
-        ========================= */
-      footer {
-        text-align: center;
-        padding: 25px;
-        color: #777;
-        font-size: 13px;
-      }
-
-      /* =========================
-           RESPONSIVO
-        ========================= */
-      @media (max-width: 700px) {
         header {
-          padding: 18px 20px;
+            background: #1f4e79;
+            color: white;
+            padding: 20px 40px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         header h1 {
-          font-size: 21px;
+            margin: 0;
+            font-size: 26px;
         }
+
+        header p {
+            margin: 5px 0 0;
+            opacity: 0.9;
+        }
+
+        /* =========================
+           CONTAINER
+        ========================= */
 
         .container {
-          margin: 20px auto;
-          padding: 0 12px;
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
         }
+
+        /* =========================
+           CARDS
+        ========================= */
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: #1f4e79;
+        }
+
+        /* =========================
+           BOAS VINDAS
+        ========================= */
 
         .boas-vindas {
-          align-items: flex-start;
+            display: flex;
+            align-items: center;
+            gap: 18px;
         }
 
+        .avatar {
+            width: 55px;
+            height: 55px;
+
+            background: #1f4e79;
+            color: white;
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .boas-vindas h2 {
+            margin: 0;
+        }
+
+        .boas-vindas p {
+            margin: 6px 0 0;
+            color: #666;
+        }
+
+        /* =========================
+           BOTÕES
+        ========================= */
+
         .botoes {
-          flex-direction: column;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
         .botao {
-          width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 12px 18px;
+
+            background: #1f4e79;
+            color: white;
+
+            text-decoration: none;
+
+            border-radius: 6px;
+
+            font-weight: bold;
+
+            transition: 0.2s;
+        }
+
+        .botao:hover {
+            background: #163a5c;
+            transform: translateY(-1px);
+        }
+
+        .botao-faq {
+            background: #6f42c1;
+        }
+
+        .botao-faq:hover {
+            background: #59339d;
         }
 
         .botao-sair {
-          width: auto;
+            background: #c0392b;
         }
 
-        th,
+        .botao-sair:hover {
+            background: #922b21;
+        }
+
+        .botao-detalhes {
+            padding: 8px 12px;
+            font-size: 13px;
+        }
+
+        /* =========================
+           FAQ
+        ========================= */
+
+        .faq-destaque {
+            background:
+                linear-gradient(
+                    135deg,
+                    #eef3f8,
+                    #f5f0ff
+                );
+
+            border-left: 5px solid #6f42c1;
+        }
+
+        .faq-destaque h2 {
+            color: #6f42c1;
+        }
+
+        .faq-destaque p {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* =========================
+           TABELA
+        ========================= */
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th {
+            background: #1f4e79;
+            color: white;
+
+            padding: 13px;
+
+            text-align: left;
+        }
+
         td {
-          padding: 9px;
-          font-size: 12px;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
         }
-      }
+
+        tr:hover {
+            background: #f7f9fb;
+        }
+
+        /* =========================
+           STATUS
+        ========================= */
+
+        .status-badge {
+
+            display: inline-block;
+
+            padding: 6px 12px;
+
+            border-radius: 15px;
+
+            font-weight: bold;
+
+            font-size: 12px;
+
+            white-space: nowrap;
+        }
+
+        .status-aberto {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-atendimento {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .status-resolvido {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-fechado {
+            background: #e2e3e5;
+            color: #41464b;
+        }
+
+        .status-cancelado {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        /* =========================
+           SEM ATENDIMENTOS
+        ========================= */
+
+        .sem-atendimentos {
+            text-align: center;
+
+            padding: 30px;
+
+            color: #777;
+        }
+
+        .sem-atendimentos-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+
+        /* =====================================================
+           CHAT - BOTÃO FLUTUANTE
+        ===================================================== */
+
+        .chat-botao {
+
+            position: fixed;
+
+            right: 25px;
+            bottom: 25px;
+
+            width: 62px;
+            height: 62px;
+
+            border-radius: 50%;
+
+            border: none;
+
+            background: #1f4e79;
+            color: white;
+
+            font-size: 27px;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 5px 18px
+                rgba(0, 0, 0, 0.25);
+
+            z-index: 999;
+
+            transition: 0.2s;
+        }
+
+        .chat-botao:hover {
+            background: #163a5c;
+            transform: scale(1.05);
+        }
+
+
+        /* =====================================================
+           JANELA DO CHAT
+        ===================================================== */
+
+        .chat-janela {
+
+            position: fixed;
+
+            right: 25px;
+            bottom: 100px;
+
+            width: 380px;
+            height: 520px;
+
+            background: white;
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 8px 30px
+                rgba(0, 0, 0, 0.25);
+
+            overflow: hidden;
+
+            display: none;
+            flex-direction: column;
+
+            z-index: 1000;
+        }
+
+        .chat-janela.aberto {
+            display: flex;
+        }
+
+
+        /* =========================
+           CABEÇALHO CHAT
+        ========================= */
+
+        .chat-header {
+
+            background: #1f4e79;
+            color: white;
+
+            padding: 16px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-header-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-avatar {
+
+            width: 38px;
+            height: 38px;
+
+            background: white;
+            color: #1f4e79;
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 20px;
+        }
+
+        .chat-header strong {
+            display: block;
+        }
+
+        .chat-online {
+            font-size: 11px;
+            opacity: 0.85;
+            margin-top: 3px;
+        }
+
+        .chat-fechar {
+
+            border: none;
+
+            background: transparent;
+            color: white;
+
+            font-size: 22px;
+
+            cursor: pointer;
+        }
+
+
+        /* =========================
+           MENSAGENS CHAT
+        ========================= */
+
+        .chat-mensagens {
+
+            flex: 1;
+
+            padding: 15px;
+
+            overflow-y: auto;
+
+            background: #f4f6f8;
+
+            display: flex;
+            flex-direction: column;
+
+            gap: 12px;
+        }
+
+        .chat-mensagem {
+
+            max-width: 80%;
+
+            padding: 10px 13px;
+
+            border-radius: 12px;
+
+            line-height: 1.4;
+
+            font-size: 14px;
+
+            word-break: break-word;
+        }
+
+
+        /* =========================
+           ASSISTENTE
+        ========================= */
+
+        .chat-assistente {
+
+            align-self: flex-start;
+
+            background: white;
+
+            border-left:
+                4px solid #1f4e79;
+
+            border-bottom-left-radius: 3px;
+        }
+
+
+        /* =========================
+           ALUNO
+        ========================= */
+
+        .chat-aluno {
+
+            align-self: flex-end;
+
+            background: #1f4e79;
+            color: white;
+
+            border-bottom-right-radius: 3px;
+        }
+
+        .chat-hora {
+
+            display: block;
+
+            margin-top: 5px;
+
+            font-size: 10px;
+
+            opacity: 0.7;
+        }
+
+
+        /* =========================
+           DIGITANDO
+        ========================= */
+
+        .chat-digitando {
+
+            align-self: flex-start;
+
+            background: white;
+
+            color: #777;
+
+            padding: 10px 13px;
+
+            border-radius: 12px;
+
+            font-size: 13px;
+
+            display: none;
+        }
+
+
+        /* =========================
+           FORMULÁRIO CHAT
+        ========================= */
+
+        .chat-form {
+
+            display: flex;
+
+            gap: 8px;
+
+            padding: 12px;
+
+            border-top: 1px solid #ddd;
+
+            background: white;
+        }
+
+        .chat-input {
+
+            flex: 1;
+
+            border: 1px solid #ccc;
+
+            border-radius: 20px;
+
+            padding: 10px 14px;
+
+            outline: none;
+
+            font-size: 14px;
+        }
+
+        .chat-input:focus {
+            border-color: #1f4e79;
+        }
+
+        .chat-enviar {
+
+            width: 42px;
+            height: 42px;
+
+            border: none;
+
+            border-radius: 50%;
+
+            background: #1f4e79;
+            color: white;
+
+            cursor: pointer;
+
+            font-size: 17px;
+        }
+
+        .chat-enviar:hover {
+            background: #163a5c;
+        }
+
+
+        /* =========================
+           ABRIR CHAMADO NO CHAT
+        ========================= */
+
+        .chat-abrir-chamado {
+
+            display: inline-block;
+
+            margin-top: 10px;
+
+            padding: 8px 12px;
+
+            background: #1f4e79;
+            color: white;
+
+            text-decoration: none;
+
+            border-radius: 6px;
+
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+
+            text-align: center;
+
+            padding: 25px;
+
+            color: #777;
+
+            font-size: 13px;
+        }
+
+
+        /* =========================
+           RESPONSIVO
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            header {
+                padding: 18px 20px;
+            }
+
+            header h1 {
+                font-size: 21px;
+            }
+
+            .container {
+                margin: 20px auto;
+                padding: 0 12px;
+            }
+
+            .boas-vindas {
+                align-items: flex-start;
+            }
+
+            .botoes {
+                flex-direction: column;
+            }
+
+            .botao {
+                width: 100%;
+            }
+
+            .botao-sair {
+                width: auto;
+            }
+
+            th,
+            td {
+                padding: 9px;
+                font-size: 12px;
+            }
+
+            .chat-janela {
+
+                width:
+                    calc(100% - 20px);
+
+                height:
+                    calc(100% - 100px);
+
+                right: 10px;
+                bottom: 85px;
+            }
+
+            .chat-botao {
+                right: 15px;
+                bottom: 15px;
+            }
+        }
+
     </style>
-  </head>
-  <body>
-    <!-- =========================
-     HEADER
-========================= -->
-    <header>
-      <div>
-        <h1> Área do Aluno </h1>
-        <p> Sistema de Atendimento Universitário </p>
-      </div>
-      <a href="/logout" class="botao botao-sair"> Sair </a>
-    </header>
-    <!-- =========================
-     CONTEÚDO
-========================= -->
-    <div class="container">
-      <!-- =========================
-         BOAS VINDAS
-    ========================= -->
-      <div class="card">
+
+</head>
+
+
+<body>
+
+
+<!-- ===================================================== -->
+<!-- HEADER -->
+<!-- ===================================================== -->
+
+<header>
+
+    <div>
+
+        <h1>
+            Área do Aluno
+        </h1>
+
+        <p>
+            Sistema de Atendimento Universitário
+        </p>
+
+    </div>
+
+    <a href="/logout"
+       class="botao botao-sair">
+
+        Sair
+
+    </a>
+
+</header>
+
+
+<!-- ===================================================== -->
+<!-- CONTEÚDO -->
+<!-- ===================================================== -->
+
+<div class="container">
+
+
+    <!-- ================================================= -->
+    <!-- BOAS VINDAS -->
+    <!-- ================================================= -->
+
+    <div class="card">
+
         <div class="boas-vindas">
-          <div class="avatar"> 👤 </div>
-          <div>
-            <h2> Olá, <span th:text="${session.usuario.nome}"> Aluno </span>! </h2>
-            <p> Bem-vindo ao sistema de atendimento da universidade. </p>
-          </div>
+
+            <div class="avatar">
+                👤
+            </div>
+
+            <div>
+
+                <h2>
+
+                    Olá,
+
+                    <span th:text="${session.usuario.nome}">
+                        Aluno
+                    </span>!
+
+                </h2>
+
+                <p>
+                    Bem-vindo ao sistema de atendimento
+                    da universidade.
+                </p>
+
+            </div>
+
         </div>
-      </div>
-      <!-- =========================
-         AÇÕES
-    ========================= -->
-      <div class="card">
-        <h2> Acesso rápido </h2>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- AÇÕES -->
+    <!-- ================================================= -->
+
+    <div class="card">
+
+        <h2>
+            Acesso rápido
+        </h2>
+
         <div class="botoes">
-          <!-- Novo atendimento -->
-          <a href="/atendimentos/novo" class="botao"> ➕ Abrir Novo Atendimento </a>
-          <!-- Meus atendimentos -->
-          <a href="/meus-atendimentos" class="botao"> 📋 Meus Atendimentos </a>
-          <!-- FAQ -->
-          <a href="/faq" class="botao botao-faq"> 🤖 FAQ / Assistente Virtual </a>
+
+            <a href="/atendimentos/novo"
+               class="botao">
+
+                ➕ Abrir Novo Atendimento
+
+            </a>
+
+            <a href="/meus-atendimentos"
+               class="botao">
+
+                📋 Meus Atendimentos
+
+            </a>
+
+            <a href="/faq"
+               class="botao botao-faq">
+
+                📚 Consultar FAQ
+
+            </a>
+
+            <button type="button"
+                    class="botao botao-faq"
+                    onclick="abrirChat()"
+                    style="border:none; cursor:pointer;">
+
+                💬 Assistente Virtual
+
+            </button>
+
         </div>
-      </div>
-      <!-- =========================
-         FAQ DESTAQUE
-    ========================= -->
-      <div class="card faq-destaque">
-        <h2> 🤖 Precisa de ajuda? </h2>
-        <p> Consulte nossa FAQ para encontrar respostas rápidas sobre boletos, matrícula, documentos, notas, rematrícula, estágio e outros processos da universidade. </p>
-        <a href="/faq" class="botao botao-faq"> 🔎 Consultar FAQ </a>
-      </div>
-      <!-- =========================
-         MEUS ATENDIMENTOS
-    ========================= -->
-      <div class="card">
-        <h2> 📋 Meus Atendimentos </h2>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- FAQ DESTAQUE -->
+    <!-- ================================================= -->
+
+    <div class="card faq-destaque">
+
+        <h2>
+            🤖 Precisa de ajuda?
+        </h2>
+
+        <p>
+            Converse com nosso Assistente Virtual para encontrar
+            respostas rápidas sobre boletos, matrícula,
+            documentos, notas, rematrícula, estágio
+            e outros processos da universidade.
+        </p>
+
+        <button type="button"
+                class="botao botao-faq"
+                onclick="abrirChat()"
+                style="border:none; cursor:pointer;">
+
+            💬 Conversar com o Assistente
+
+        </button>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- MEUS ATENDIMENTOS -->
+    <!-- ================================================= -->
+
+    <div class="card">
+
+        <h2>
+            📋 Meus Atendimentos
+        </h2>
+
         <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th> Protocolo </th>
-                <th> Assunto </th>
-                <th> Categoria </th>
-                <th> Prioridade </th>
-                <th> Status </th>
-                <th> Ação </th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Atendimentos -->
-              <tr th:each="atendimento : ${atendimentos}">
-                <td th:text="${atendimento.protocolo}"> AT-2026-0001 </td>
-                <td th:text="${atendimento.assunto}"> Assunto </td>
-                <td th:text="${atendimento.categoria}"> Acadêmico </td>
-                <td th:text="${atendimento.prioridade}"> NORMAL </td>
-                <!-- STATUS -->
-                <td>
-                  <span class="status-badge" th:classappend="
 
-                                ${atendimento.status == 'ABERTO'}
-                                ? ' status-aberto'
+            <table>
 
-                                :
+                <thead>
 
-                                (${atendimento.status == 'EM ATENDIMENTO'}
-                                ? ' status-atendimento'
+                    <tr>
 
-                                :
+                        <th>Protocolo</th>
+                        <th>Assunto</th>
+                        <th>Categoria</th>
+                        <th>Prioridade</th>
+                        <th>Status</th>
+                        <th>Ação</th>
 
-                                (${atendimento.status == 'CANCELADO'}
-                                ? ' status-cancelado'
+                    </tr>
 
-                                :
+                </thead>
 
-                                ' status-resolvido'))
+                <tbody>
 
-                                " th:text="${atendimento.status}"> ABERTO </span>
-                </td>
-                <!-- AÇÃO -->
-                <td>
-                  <a class="botao botao-detalhes" th:href="@{/atendimentos/{id}(id=${atendimento.id})}"> 👁 Ver Atendimento </a>
-                </td>
-              </tr>
-              <!-- Nenhum atendimento -->
-              <tr th:if="${#lists.isEmpty(atendimentos)}">
-										<td
+                    <tr th:each="atendimento : ${atendimentos}">
+
+                        <td th:text="${atendimento.protocolo}">
+                            AT-2026-0001
+                        </td>
+
+                        <td th:text="${atendimento.assunto}">
+                            Assunto
+                        </td>
+
+                        <td th:text="${atendimento.categoria}">
+                            Acadêmico
+                        </td>
+
+                        <td th:text="${atendimento.prioridade}">
+                            NORMAL
+                        </td>
+
+                        <td>
+
+                            <span
+                                class="status-badge"
+
+                                th:classappend="
+
+                                    ${atendimento.status == 'ABERTO'}
+                                    ? ' status-aberto'
+
+                                    :
+
+                                    (${atendimento.status == 'EM ATENDIMENTO'}
+                                    ? ' status-atendimento'
+
+                                    :
+
+                                    (${atendimento.status == 'CANCELADO'}
+                                    ? ' status-cancelado'
+
+                                    :
+
+                                    (${atendimento.status == 'FECHADO'}
+                                    ? ' status-fechado'
+
+                                    :
+
+                                    ' status-resolvido')))
+
+                                "
+
+                                th:text="${atendimento.status}">
+
+                                ABERTO
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <a
+                                class="botao botao-detalhes"
+
+                                th:href="@{/atendimentos/{id}
+                                (id=${atendimento.id})}">
+
+                                👁 Ver Atendimento
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- ================================= -->
+                    <!-- NENHUM ATENDIMENTO -->
+                    <!-- ================================= -->
+
+                    <tr th:if="${#lists.isEmpty(atendimentos)}">
+
+                        <td
                             colspan="6"
                             class="sem-atendimentos">
-											<div class="sem-atendimentos-icon">
+
+                            <div class="sem-atendimentos-icon">
                                 📭
                             </div>
-											<strong>
+
+                            <strong>
                                 Você ainda não possui atendimentos.
                             </strong>
-											<br>
-												<br>
+
+                            <br><br>
 
                             Clique em
-                            
-													<strong>
+
+                            <strong>
                                 "Abrir Novo Atendimento"
                             </strong>
+
                             para registrar sua solicitação.
 
-                        
-												</td>
-											</tr>
-										</tbody>
-									</table>
-								</div>
-							</div>
-						</div>
-						<!-- =========================
-     FOOTER
-========================= -->
-						<footer>
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- BOTÃO FLUTUANTE -->
+<!-- ===================================================== -->
+
+<button
+    type="button"
+    class="chat-botao"
+    onclick="alternarChat()"
+    title="Assistente Virtual">
+
+    💬
+
+</button>
+
+
+<!-- ===================================================== -->
+<!-- CHAT -->
+<!-- ===================================================== -->
+
+<div
+    id="chatJanela"
+    class="chat-janela">
+
+
+    <!-- CABEÇALHO -->
+
+    <div class="chat-header">
+
+        <div class="chat-header-info">
+
+            <div class="chat-avatar">
+                🤖
+            </div>
+
+            <div>
+
+                <strong>
+                    Assistente Virtual
+                </strong>
+
+                <div class="chat-online">
+                    ● Online
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="chat-fechar"
+            onclick="fecharChat()">
+
+            ×
+
+        </button>
+
+    </div>
+
+
+    <!-- MENSAGENS -->
+
+    <div
+        id="chatMensagens"
+        class="chat-mensagens">
+
+        <div class="chat-mensagem chat-assistente">
+
+            Olá,
+            <span th:text="${session.usuario.nome}">
+                Aluno
+            </span>!
+
+            👋
+
+            <br><br>
+
+            Sou o Assistente Virtual da universidade.
+
+            <br>
+
+            Como posso ajudar?
+
+            <span class="chat-hora">
+                Agora
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- DIGITANDO -->
+
+    <div
+        id="chatDigitando"
+        class="chat-digitando">
+
+        Assistente está digitando...
+
+    </div>
+
+
+    <!-- FORM -->
+
+    <form
+        id="chatForm"
+        class="chat-form">
+
+        <input
+            id="chatInput"
+            class="chat-input"
+            type="text"
+            placeholder="Digite sua mensagem..."
+            autocomplete="off"
+            required>
+
+        <button
+            type="submit"
+            class="chat-enviar">
+
+            ➤
+
+        </button>
+
+    </form>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- FOOTER -->
+<!-- ===================================================== -->
+
+<footer>
 
     Sistema de Atendimento Universitário
 
 </footer>
-					</body>
-				</html>
+
+
+<!-- ===================================================== -->
+<!-- JAVASCRIPT DO CHAT -->
+<!-- ===================================================== -->
+
+<script>
+
+    const chatJanela =
+        document.getElementById(
+            "chatJanela"
+        );
+
+    const chatMensagens =
+        document.getElementById(
+            "chatMensagens"
+        );
+
+    const chatForm =
+        document.getElementById(
+            "chatForm"
+        );
+
+    const chatInput =
+        document.getElementById(
+            "chatInput"
+        );
+
+    const chatDigitando =
+        document.getElementById(
+            "chatDigitando"
+        );
+
+
+    // =====================================================
+    // ABRIR / FECHAR CHAT
+    // =====================================================
+
+    function abrirChat() {
+
+        chatJanela.classList.add(
+            "aberto"
+        );
+
+        chatInput.focus();
+
+        rolarChat();
+
+    }
+
+
+    function fecharChat() {
+
+        chatJanela.classList.remove(
+            "aberto"
+        );
+
+    }
+
+
+    function alternarChat() {
+
+        if (
+            chatJanela.classList.contains(
+                "aberto"
+            )
+        ) {
+
+            fecharChat();
+
+        } else {
+
+            abrirChat();
+
+        }
+
+    }
+
+
+    // =====================================================
+    // HORÁRIO
+    // =====================================================
+
+    function horarioAtual() {
+
+        const agora =
+            new Date();
+
+        return agora.toLocaleTimeString(
+            "pt-BR",
+            {
+                hour: "2-digit",
+                minute: "2-digit"
+            }
+        );
+
+    }
+
+
+    // =====================================================
+    // ADICIONAR MENSAGEM
+    // =====================================================
+
+    function adicionarMensagem(
+        texto,
+        tipo,
+        encontrou = true
+    ) {
+
+        const mensagem =
+            document.createElement(
+                "div"
+            );
+
+        mensagem.classList.add(
+            "chat-mensagem"
+        );
+
+
+        if (tipo === "aluno") {
+
+            mensagem.classList.add(
+                "chat-aluno"
+            );
+
+        } else {
+
+            mensagem.classList.add(
+                "chat-assistente"
+            );
+
+        }
+
+
+        const textoElemento =
+            document.createElement(
+                "div"
+            );
+
+        textoElemento.textContent =
+            texto;
+
+        mensagem.appendChild(
+            textoElemento
+        );
+
+
+        // =============================================
+        // SE NÃO ENCONTROU RESPOSTA
+        // =============================================
+
+        if (
+            tipo === "assistente"
+            && encontrou === false
+        ) {
+
+            const link =
+                document.createElement(
+                    "a"
+                );
+
+            link.href =
+                "/atendimentos/novo";
+
+            link.className =
+                "chat-abrir-chamado";
+
+            link.textContent =
+                "➕ Abrir chamado";
+
+            mensagem.appendChild(
+                link
+            );
+
+        }
+
+
+        const hora =
+            document.createElement(
+                "span"
+            );
+
+        hora.className =
+            "chat-hora";
+
+        hora.textContent =
+            horarioAtual();
+
+        mensagem.appendChild(
+            hora
+        );
+
+
+        chatMensagens.appendChild(
+            mensagem
+        );
+
+        rolarChat();
+
+    }
+
+
+    // =====================================================
+    // ROLAR PARA ÚLTIMA MENSAGEM
+    // =====================================================
+
+    function rolarChat() {
+
+        chatMensagens.scrollTop =
+            chatMensagens.scrollHeight;
+
+    }
+
+
+    // =====================================================
+    // ENVIAR PERGUNTA
+    // =====================================================
+
+    chatForm.addEventListener(
+        "submit",
+
+        async function(event) {
+
+            event.preventDefault();
+
+            const pergunta =
+                chatInput.value.trim();
+
+            if (!pergunta) {
+                return;
+            }
+
+
+            adicionarMensagem(
+                pergunta,
+                "aluno"
+            );
+
+            chatInput.value = "";
+
+            chatInput.disabled = true;
+
+            chatDigitando.style.display =
+                "block";
+
+            rolarChat();
+
+
+            try {
+
+                const dados =
+                    new URLSearchParams();
+
+                dados.append(
+                    "pergunta",
+                    pergunta
+                );
+
+
+                const resposta =
+                    await fetch(
+                        "/assistente/perguntar-json",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/x-www-form-urlencoded"
+                            },
+
+                            body:
+                                dados.toString()
+                        }
+                    );
+
+
+                if (!resposta.ok) {
+
+                    throw new Error(
+                        "Erro ao consultar assistente."
+                    );
+
+                }
+
+
+                const resultado =
+                    await resposta.json();
+
+
+                chatDigitando.style.display =
+                    "none";
+
+
+                adicionarMensagem(
+                    resultado.resposta,
+                    "assistente",
+                    resultado.encontrou
+                );
+
+
+            } catch (erro) {
+
+                chatDigitando.style.display =
+                    "none";
+
+
+                adicionarMensagem(
+                    "Não foi possível consultar o assistente neste momento. "
+                    + "Tente novamente em alguns instantes.",
+                    "assistente"
+                );
+
+                console.error(
+                    erro
+                );
+
+            } finally {
+
+                chatInput.disabled =
+                    false;
+
+                chatInput.focus();
+
+            }
+
+        }
+    );
+
+</script>
+
+
+</body>
+
+</html>

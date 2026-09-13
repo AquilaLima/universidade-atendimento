@@ -1,9 +1,10 @@
 package universidade_atendimento;
 
 import jakarta.servlet.http.HttpSession;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Random;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,22 +16,59 @@ public class LoginController {
 
     private final UsuarioRepository usuarioRepository;
     private final AtendimentoRepository atendimentoRepository;
-
-    /*
-     * Credencial da universidade.
-     *
-     * Não ficará escrita diretamente no código.
-     * Será obtida de uma variável de ambiente.
-     */
-    @Value("${app.universidade.credencial}")
-    private String credencialUniversidade;
+    private final EmailService emailService;
 
     public LoginController(
             UsuarioRepository usuarioRepository,
-            AtendimentoRepository atendimentoRepository) {
+            AtendimentoRepository atendimentoRepository,
+            EmailService emailService) {
 
         this.usuarioRepository = usuarioRepository;
         this.atendimentoRepository = atendimentoRepository;
+        this.emailService = emailService;
+    }
+
+    // =====================================================
+    // PÁGINA INICIAL
+    // =====================================================
+
+    @GetMapping("/")
+    public String inicio(HttpSession session) {
+
+        Long usuarioId =
+                (Long) session.getAttribute("usuarioId");
+
+        if (usuarioId == null) {
+            return "redirect:/login";
+        }
+
+        Usuario usuario =
+                usuarioRepository.findById(usuarioId)
+                        .orElse(null);
+
+        if (usuario == null
+                || !Boolean.TRUE.equals(usuario.getAtivo())) {
+
+            session.invalidate();
+
+            return "redirect:/login";
+        }
+
+        if ("ADM".equals(usuario.getPerfil())) {
+            return "redirect:/admin";
+        }
+
+        if ("UNIVERSIDADE".equals(usuario.getPerfil())) {
+            return "redirect:/universidade";
+        }
+
+        if ("ALUNO".equals(usuario.getPerfil())) {
+            return "redirect:/usuario";
+        }
+
+        session.invalidate();
+
+        return "redirect:/login";
     }
 
     // =====================================================
@@ -45,7 +83,6 @@ public class LoginController {
 
     // =====================================================
     // PRIMEIRO PASSO DO ALUNO
-    // INFORMA SOMENTE O E-MAIL INSTITUCIONAL
     // =====================================================
 
     @PostMapping("/login/aluno")
@@ -54,8 +91,13 @@ public class LoginController {
             Model model,
             HttpSession session) {
 
+        String emailNormalizado =
+                email.trim().toLowerCase();
+
         Optional<Usuario> resultado =
-                usuarioRepository.findByEmail(email.trim().toLowerCase());
+                usuarioRepository.findByEmail(
+                        emailNormalizado
+                );
 
         if (resultado.isEmpty()) {
 
@@ -67,9 +109,22 @@ public class LoginController {
             return "login";
         }
 
-        Usuario usuario = resultado.get();
+        Usuario usuario =
+                resultado.get();
 
-        if (!"ALUNO".equals(usuario.getPerfil())) {
+        if (!Boolean.TRUE.equals(
+                usuario.getAtivo())) {
+
+            model.addAttribute(
+                    "erro",
+                    "Este usuário está desativado. Procure a instituição."
+            );
+
+            return "login";
+        }
+
+        if (!"ALUNO".equals(
+                usuario.getPerfil())) {
 
             model.addAttribute(
                     "erro",
@@ -80,7 +135,7 @@ public class LoginController {
         }
 
         // =================================================
-        // ALUNO AINDA NÃO FINALIZOU O CADASTRO
+        // PRIMEIRO ACESSO
         // =================================================
 
         if (!Boolean.TRUE.equals(
@@ -96,7 +151,6 @@ public class LoginController {
 
         // =================================================
         // CADASTRO JÁ FINALIZADO
-        // AGORA PRECISAMOS VALIDAR A SENHA
         // =================================================
 
         session.setAttribute(
@@ -108,7 +162,7 @@ public class LoginController {
     }
 
     // =====================================================
-    // TELA PARA INFORMAR A SENHA DO ALUNO
+    // TELA DE SENHA DO ALUNO
     // =====================================================
 
     @GetMapping("/login/aluno/senha")
@@ -116,7 +170,9 @@ public class LoginController {
             HttpSession session) {
 
         Long usuarioId =
-                (Long) session.getAttribute("loginAlunoId");
+                (Long) session.getAttribute(
+                        "loginAlunoId"
+                );
 
         if (usuarioId == null) {
 
@@ -137,7 +193,9 @@ public class LoginController {
             Model model) {
 
         Long usuarioId =
-                (Long) session.getAttribute("loginAlunoId");
+                (Long) session.getAttribute(
+                        "loginAlunoId"
+                );
 
         if (usuarioId == null) {
 
@@ -150,13 +208,31 @@ public class LoginController {
 
         if (usuario == null) {
 
-            session.removeAttribute("loginAlunoId");
+            session.removeAttribute(
+                    "loginAlunoId"
+            );
 
             return "redirect:/login";
         }
 
-        if (usuario.getSenha() == null ||
-                !usuario.getSenha().equals(senha)) {
+        if (!Boolean.TRUE.equals(
+                usuario.getAtivo())) {
+
+            session.invalidate();
+
+            return "redirect:/login";
+        }
+
+        if (!"ALUNO".equals(
+                usuario.getPerfil())) {
+
+            session.invalidate();
+
+            return "redirect:/login";
+        }
+
+        if (usuario.getSenha() == null
+                || !usuario.getSenha().equals(senha)) {
 
             model.addAttribute(
                     "erro",
@@ -166,9 +242,14 @@ public class LoginController {
             return "login-aluno-senha";
         }
 
-        session.removeAttribute("loginAlunoId");
+        session.removeAttribute(
+                "loginAlunoId"
+        );
 
-        criarSessao(usuario, session);
+        criarSessao(
+                usuario,
+                session
+        );
 
         return "redirect:/usuario";
     }
@@ -176,29 +257,7 @@ public class LoginController {
     // =====================================================
     // FINALIZAR CADASTRO DO ALUNO
     // =====================================================
-    @GetMapping("/")
-public String inicio(HttpSession session) {
 
-    Usuario usuario =
-            (Usuario) session.getAttribute("usuario");
-
-    if (usuario == null) {
-        return "redirect:/login";
-    }
-
-    if ("UNIVERSIDADE".equals(usuario.getPerfil())) {
-        return "redirect:/universidade";
-    }
-
-    if ("ALUNO".equals(usuario.getPerfil())) {
-        return "redirect:/usuario";
-    }
-
-    session.invalidate();
-
-    return "redirect:/login";
-}
-    
     @GetMapping("/finalizar-cadastro")
     public String finalizarCadastro(
             HttpSession session,
@@ -223,6 +282,14 @@ public String inicio(HttpSession session) {
             session.removeAttribute(
                     "preCadastroUsuarioId"
             );
+
+            return "redirect:/login";
+        }
+
+        if (!Boolean.TRUE.equals(
+                usuario.getAtivo())) {
+
+            session.invalidate();
 
             return "redirect:/login";
         }
@@ -266,52 +333,62 @@ public String inicio(HttpSession session) {
             return "redirect:/login";
         }
 
-        if (!"ALUNO".equals(usuario.getPerfil())) {
+        if (!Boolean.TRUE.equals(
+                usuario.getAtivo())) {
+
+            session.invalidate();
 
             return "redirect:/login";
         }
 
-        usuario.setNome(nome.trim());
-        usuario.setTelefone(telefone.trim());
-        usuario.setSenha(senha);
+        if (!"ALUNO".equals(
+                usuario.getPerfil())) {
 
-        usuario.setCadastroFinalizado(true);
+            return "redirect:/login";
+        }
 
-        usuarioRepository.save(usuario);
+        usuario.setNome(
+                nome.trim()
+        );
+
+        usuario.setTelefone(
+                telefone.trim()
+        );
+
+        usuario.setSenha(
+                senha
+        );
+
+        usuario.setCadastroFinalizado(
+                true
+        );
+
+        usuarioRepository.save(
+                usuario
+        );
 
         session.removeAttribute(
                 "preCadastroUsuarioId"
         );
 
-        criarSessao(usuario, session);
+        criarSessao(
+                usuario,
+                session
+        );
 
         return "redirect:/usuario";
     }
 
     // =====================================================
     // LOGIN DA UNIVERSIDADE
+    // ENVIA CÓDIGO PARA O E-MAIL
     // =====================================================
 
     @PostMapping("/login/universidade")
     public String loginUniversidade(
             @RequestParam String email,
-            @RequestParam String credencial,
             Model model,
             HttpSession session) {
-
-        // =============================================
-        // VERIFICA A CREDENCIAL
-        // =============================================
-
-        if (!credencialUniversidade.equals(credencial)) {
-
-            model.addAttribute(
-                    "erro",
-                    "Credencial institucional inválida."
-            );
-
-            return "login";
-        }
 
         String emailNormalizado =
                 email.trim().toLowerCase();
@@ -321,60 +398,328 @@ public String inicio(HttpSession session) {
                         emailNormalizado
                 );
 
-        Usuario usuario;
-
-        // =============================================
-        // UNIVERSIDADE AINDA NÃO EXISTE
-        // CRIA AUTOMATICAMENTE
-        // =============================================
-
         if (resultado.isEmpty()) {
 
-            usuario = new Usuario();
-
-            usuario.setEmail(emailNormalizado);
-
-            usuario.setNome(
-                    "Universidade"
+            model.addAttribute(
+                    "erro",
+                    "E-mail institucional não autorizado."
             );
 
-            usuario.setPerfil(
-                    "UNIVERSIDADE"
-            );
-
-            usuario.setCadastroFinalizado(
-                    true
-            );
-
-            usuarioRepository.save(usuario);
-
-        } else {
-
-            usuario = resultado.get();
-
-            // =========================================
-            // EVITA TRANSFORMAR ALUNO EM UNIVERSIDADE
-            // =========================================
-
-            if (!"UNIVERSIDADE".equals(
-                    usuario.getPerfil())) {
-
-                model.addAttribute(
-                        "erro",
-                        "Este e-mail pertence a um aluno."
-                );
-
-                return "login";
-            }
+            return "login";
         }
 
-        criarSessao(usuario, session);
+        Usuario usuario =
+                resultado.get();
+
+        if (!"UNIVERSIDADE".equals(
+                usuario.getPerfil())) {
+
+            model.addAttribute(
+                    "erro",
+                    "Este e-mail não pertence a um funcionário da Universidade."
+            );
+
+            return "login";
+        }
+
+        if (!Boolean.TRUE.equals(
+                usuario.getAtivo())) {
+
+            model.addAttribute(
+                    "erro",
+                    "Este acesso está desativado. Procure o administrador."
+            );
+
+            return "login";
+        }
+
+        // Código de 6 dígitos
+        String codigo =
+                String.format(
+                        "%06d",
+                        new Random()
+                                .nextInt(1000000)
+                );
+
+        usuario.setCodigoAcesso(
+                codigo
+        );
+
+        // Código válido por 10 minutos
+        usuario.setCodigoAcessoExpiraEm(
+                LocalDateTime.now()
+                        .plusMinutes(10)
+        );
+
+        usuarioRepository.save(
+                usuario
+        );
+
+        try {
+
+            emailService.enviarCodigoAcesso(
+                    usuario.getEmail(),
+                    codigo
+            );
+
+        } catch (Exception e) {
+
+    System.out.println("ERRO AO ENVIAR EMAIL:");
+    e.printStackTrace();
+
+    usuario.setCodigoAcesso(null);
+    usuario.setCodigoAcessoExpiraEm(null);
+
+    usuarioRepository.save(usuario);
+
+    model.addAttribute(
+            "erro",
+            "Não foi possível enviar o código de acesso."
+    );
+
+    return "login";
+}
+
+        session.setAttribute(
+                "loginUniversidadeId",
+                usuario.getId()
+        );
+
+        return "redirect:/login/universidade/codigo";
+    }
+
+    // =====================================================
+    // TELA DO CÓDIGO DA UNIVERSIDADE
+    // =====================================================
+
+    @GetMapping("/login/universidade/codigo")
+    public String telaCodigoUniversidade(
+            HttpSession session) {
+
+        Long usuarioId =
+                (Long) session.getAttribute(
+                        "loginUniversidadeId"
+                );
+
+        if (usuarioId == null) {
+
+            return "redirect:/login";
+        }
+
+        Usuario usuario =
+                usuarioRepository.findById(usuarioId)
+                        .orElse(null);
+
+        if (usuario == null
+                || !"UNIVERSIDADE".equals(usuario.getPerfil())
+                || !Boolean.TRUE.equals(usuario.getAtivo())) {
+
+            session.removeAttribute(
+                    "loginUniversidadeId"
+            );
+
+            return "redirect:/login";
+        }
+
+        return "login-universidade-codigo";
+    }
+
+    // =====================================================
+    // VALIDAR CÓDIGO DA UNIVERSIDADE
+    // =====================================================
+
+    @PostMapping("/login/universidade/codigo")
+    public String validarCodigoUniversidade(
+            @RequestParam String codigo,
+            HttpSession session,
+            Model model) {
+
+        Long usuarioId =
+                (Long) session.getAttribute(
+                        "loginUniversidadeId"
+                );
+
+        if (usuarioId == null) {
+
+            return "redirect:/login";
+        }
+
+        Usuario usuario =
+                usuarioRepository.findById(usuarioId)
+                        .orElse(null);
+
+        if (usuario == null) {
+
+            session.removeAttribute(
+                    "loginUniversidadeId"
+            );
+
+            return "redirect:/login";
+        }
+
+        if (!Boolean.TRUE.equals(
+                usuario.getAtivo())) {
+
+            session.invalidate();
+
+            return "redirect:/login";
+        }
+
+        if (!"UNIVERSIDADE".equals(
+                usuario.getPerfil())) {
+
+            session.invalidate();
+
+            return "redirect:/login";
+        }
+
+        if (usuario.getCodigoAcesso() == null
+                || usuario.getCodigoAcessoExpiraEm() == null) {
+
+            model.addAttribute(
+                    "erro",
+                    "Código de acesso inválido. Solicite um novo código."
+            );
+
+            return "login-universidade-codigo";
+        }
+
+        // Verifica se expirou
+        if (LocalDateTime.now().isAfter(
+                usuario.getCodigoAcessoExpiraEm())) {
+
+            usuario.setCodigoAcesso(
+                    null
+            );
+
+            usuario.setCodigoAcessoExpiraEm(
+                    null
+            );
+
+            usuarioRepository.save(
+                    usuario
+            );
+
+            model.addAttribute(
+                    "erro",
+                    "O código expirou. Solicite um novo código."
+            );
+
+            return "login-universidade-codigo";
+        }
+
+        // Verifica o código digitado
+        if (!usuario.getCodigoAcesso()
+                .equals(codigo.trim())) {
+
+            model.addAttribute(
+                    "erro",
+                    "Código inválido."
+            );
+
+            return "login-universidade-codigo";
+        }
+
+        // Código só pode ser usado uma vez
+        usuario.setCodigoAcesso(
+                null
+        );
+
+        usuario.setCodigoAcessoExpiraEm(
+                null
+        );
+
+        usuarioRepository.save(
+                usuario
+        );
+
+        session.removeAttribute(
+                "loginUniversidadeId"
+        );
+
+        criarSessao(
+                usuario,
+                session
+        );
 
         return "redirect:/universidade";
     }
 
     // =====================================================
-    // CRIA A SESSÃO DO USUÁRIO
+    // LOGIN DO ADMINISTRADOR
+    // =====================================================
+
+    @PostMapping("/login/admin")
+    public String loginAdmin(
+            @RequestParam String email,
+            @RequestParam String senha,
+            Model model,
+            HttpSession session) {
+
+        String emailNormalizado =
+                email.trim().toLowerCase();
+
+        Optional<Usuario> resultado =
+                usuarioRepository.findByEmail(
+                        emailNormalizado
+                );
+
+        if (resultado.isEmpty()) {
+
+            model.addAttribute(
+                    "erro",
+                    "Administrador não encontrado."
+            );
+
+            return "login";
+        }
+
+        Usuario usuario =
+                resultado.get();
+
+        if (!"ADM".equals(
+                usuario.getPerfil())) {
+
+            model.addAttribute(
+                    "erro",
+                    "Este usuário não possui perfil de administrador."
+            );
+
+            return "login";
+        }
+
+        if (!Boolean.TRUE.equals(
+                usuario.getAtivo())) {
+
+            model.addAttribute(
+                    "erro",
+                    "Este usuário está desativado."
+            );
+
+            return "login";
+        }
+
+        if (usuario.getSenha() == null
+                || !usuario.getSenha().equals(senha)) {
+
+            model.addAttribute(
+                    "erro",
+                    "Senha inválida."
+            );
+
+            return "login";
+        }
+
+        criarSessao(
+                usuario,
+                session
+        );
+
+        return "redirect:/admin";
+    }
+
+    // =====================================================
+    // CRIA A SESSÃO
     // =====================================================
 
     private void criarSessao(
@@ -406,12 +751,24 @@ public String inicio(HttpSession session) {
             HttpSession session,
             Model model) {
 
-        Usuario usuario =
-                (Usuario) session.getAttribute(
-                        "usuario"
+        Long usuarioId =
+                (Long) session.getAttribute(
+                        "usuarioId"
                 );
 
-        if (usuario == null) {
+        if (usuarioId == null) {
+
+            return "redirect:/login";
+        }
+
+        Usuario usuario =
+                usuarioRepository.findById(usuarioId)
+                        .orElse(null);
+
+        if (usuario == null
+                || !Boolean.TRUE.equals(usuario.getAtivo())) {
+
+            session.invalidate();
 
             return "redirect:/login";
         }
@@ -419,8 +776,14 @@ public String inicio(HttpSession session) {
         if (!"ALUNO".equals(
                 usuario.getPerfil())) {
 
-            return "redirect:/universidade";
+            return "redirect:/login";
         }
+
+        // Atualiza o usuário salvo na sessão
+        session.setAttribute(
+                "usuario",
+                usuario
+        );
 
         model.addAttribute(
                 "usuario",
@@ -435,47 +798,109 @@ public String inicio(HttpSession session) {
     // =====================================================
 
     @GetMapping("/universidade")
-public String universidade(
-        HttpSession session,
-        Model model) {
+    public String universidade(
+            HttpSession session,
+            Model model) {
 
-    Usuario usuario =
-            (Usuario) session.getAttribute("usuario");
+        Long usuarioId =
+                (Long) session.getAttribute(
+                        "usuarioId"
+                );
 
-    if (usuario == null) {
-        return "redirect:/login";
+        if (usuarioId == null) {
+
+            return "redirect:/login";
+        }
+
+        Usuario usuario =
+                usuarioRepository.findById(usuarioId)
+                        .orElse(null);
+
+        if (usuario == null
+                || !Boolean.TRUE.equals(usuario.getAtivo())) {
+
+            session.invalidate();
+
+            return "redirect:/login";
+        }
+
+        if (!"UNIVERSIDADE".equals(
+                usuario.getPerfil())) {
+
+            return "redirect:/login";
+        }
+
+        // Atualiza usuário salvo na sessão
+        session.setAttribute(
+                "usuario",
+                usuario
+        );
+
+        var atendimentos =
+                atendimentoRepository.findAll();
+
+        long total =
+                atendimentos.size();
+
+        long abertos =
+                atendimentos.stream()
+                        .filter(a ->
+                                "ABERTO".equalsIgnoreCase(
+                                        a.getStatus()
+                                )
+                        )
+                        .count();
+
+        long emAtendimento =
+                atendimentos.stream()
+                        .filter(a ->
+                                "EM ATENDIMENTO".equalsIgnoreCase(
+                                        a.getStatus()
+                                )
+                        )
+                        .count();
+
+        long resolvidos =
+                atendimentos.stream()
+                        .filter(a ->
+                                "RESOLVIDO".equalsIgnoreCase(
+                                        a.getStatus()
+                                )
+                        )
+                        .count();
+
+        model.addAttribute(
+                "atendimentos",
+                atendimentos
+        );
+
+        model.addAttribute(
+                "usuario",
+                usuario
+        );
+
+        model.addAttribute(
+                "total",
+                total
+        );
+
+        model.addAttribute(
+                "abertos",
+                abertos
+        );
+
+        model.addAttribute(
+                "emAtendimento",
+                emAtendimento
+        );
+
+        model.addAttribute(
+                "resolvidos",
+                resolvidos
+        );
+
+        return "universidade";
     }
-
-    if (!"UNIVERSIDADE".equals(usuario.getPerfil())) {
-        return "redirect:/usuario";
-    }
-
-    var atendimentos = atendimentoRepository.findAll();
-
-    long total = atendimentos.size();
-
-    long abertos = atendimentos.stream()
-            .filter(a -> "ABERTO".equalsIgnoreCase(a.getStatus()))
-            .count();
-
-    long emAtendimento = atendimentos.stream()
-            .filter(a -> "EM ATENDIMENTO".equalsIgnoreCase(a.getStatus()))
-            .count();
-
-    long resolvidos = atendimentos.stream()
-            .filter(a -> "RESOLVIDO".equalsIgnoreCase(a.getStatus()))
-            .count();
-
-    model.addAttribute("atendimentos", atendimentos);
-    model.addAttribute("usuario", usuario);
-
-    model.addAttribute("total", total);
-    model.addAttribute("abertos", abertos);
-    model.addAttribute("emAtendimento", emAtendimento);
-    model.addAttribute("resolvidos", resolvidos);
-
-    return "universidade";
-}
 
     // =====================================================
     // LOGOUT
