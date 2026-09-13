@@ -380,113 +380,217 @@ public class LoginController {
     }
 
     // =====================================================
-    // LOGIN DA UNIVERSIDADE
-    // ENVIA CÓDIGO PARA O E-MAIL
-    // =====================================================
+// LOGIN DA UNIVERSIDADE
+// ENVIA CÓDIGO PARA O E-MAIL
+// =====================================================
 
-    @PostMapping("/login/universidade")
-    public String loginUniversidade(
-            @RequestParam String email,
-            Model model,
-            HttpSession session) {
+@PostMapping("/login/universidade")
+public String loginUniversidade(
+        @RequestParam String email,
+        Model model,
+        HttpSession session) {
 
-        String emailNormalizado =
-                email.trim().toLowerCase();
+    long inicioTotal =
+            System.currentTimeMillis();
 
-        Optional<Usuario> resultado =
-                usuarioRepository.findByEmail(
-                        emailNormalizado
-                );
+    System.out.println(
+            "[LOGIN UNIVERSIDADE] 1 - Início: "
+            + LocalDateTime.now()
+    );
 
-        if (resultado.isEmpty()) {
+    String emailNormalizado =
+            email
+                    .trim()
+                    .toLowerCase();
 
-            model.addAttribute(
-                    "erro",
-                    "E-mail institucional não autorizado."
+    // =================================================
+    // CONSULTA USUÁRIO
+    // =================================================
+
+    long inicioBanco =
+            System.currentTimeMillis();
+
+    Optional<Usuario> resultado =
+            usuarioRepository.findByEmail(
+                    emailNormalizado
             );
 
-            return "login";
-        }
+    long fimBanco =
+            System.currentTimeMillis();
 
-        Usuario usuario =
-                resultado.get();
+    System.out.println(
+            "[LOGIN UNIVERSIDADE] 2 - Consulta usuário: "
+            + (fimBanco - inicioBanco)
+            + " ms"
+    );
 
-        if (!"UNIVERSIDADE".equals(
-                usuario.getPerfil())) {
+    if (resultado.isEmpty()) {
 
-            model.addAttribute(
-                    "erro",
-                    "Este e-mail não pertence a um funcionário da Universidade."
+        System.out.println(
+                "[LOGIN UNIVERSIDADE] E-mail não encontrado."
+        );
+
+        model.addAttribute(
+                "erro",
+                "E-mail institucional não autorizado."
+        );
+
+        return "login";
+    }
+
+    Usuario usuario =
+            resultado.get();
+
+    // =================================================
+    // VALIDAR PERFIL
+    // =================================================
+
+    if (!"UNIVERSIDADE".equals(
+            usuario.getPerfil())) {
+
+        model.addAttribute(
+                "erro",
+                "Este e-mail não pertence a um funcionário da Universidade."
+        );
+
+        return "login";
+    }
+
+    // =================================================
+    // VALIDAR USUÁRIO ATIVO
+    // =================================================
+
+    if (!Boolean.TRUE.equals(
+            usuario.getAtivo())) {
+
+        model.addAttribute(
+                "erro",
+                "Este acesso está desativado. Procure o administrador."
+        );
+
+        return "login";
+    }
+
+    // =================================================
+    // GERAR CÓDIGO
+    // =================================================
+
+    String codigo =
+            String.format(
+                    "%06d",
+                    new Random()
+                            .nextInt(1000000)
             );
 
-            return "login";
-        }
+    usuario.setCodigoAcesso(
+            codigo
+    );
 
-        if (!Boolean.TRUE.equals(
-                usuario.getAtivo())) {
+    usuario.setCodigoAcessoExpiraEm(
+            LocalDateTime.now()
+                    .plusMinutes(10)
+    );
 
-            model.addAttribute(
-                    "erro",
-                    "Este acesso está desativado. Procure o administrador."
-            );
+    // =================================================
+    // SALVAR CÓDIGO NO BANCO
+    // =================================================
 
-            return "login";
-        }
+    long inicioSalvar =
+            System.currentTimeMillis();
 
-        // Código de 6 dígitos
-        String codigo =
-                String.format(
-                        "%06d",
-                        new Random()
-                                .nextInt(1000000)
-                );
+    usuarioRepository.save(
+            usuario
+    );
 
-        usuario.setCodigoAcesso(
+    long fimSalvar =
+            System.currentTimeMillis();
+
+    System.out.println(
+            "[LOGIN UNIVERSIDADE] 3 - Salvar código no banco: "
+            + (fimSalvar - inicioSalvar)
+            + " ms"
+    );
+
+    // =================================================
+    // ENVIAR E-MAIL
+    // =================================================
+
+    try {
+
+        System.out.println(
+                "[LOGIN UNIVERSIDADE] 4 - Iniciando envio do e-mail: "
+                + LocalDateTime.now()
+        );
+
+        long inicioEmail =
+                System.currentTimeMillis();
+
+        emailService.enviarCodigoAcesso(
+                usuario.getEmail(),
                 codigo
         );
 
-        // Código válido por 10 minutos
+        long fimEmail =
+                System.currentTimeMillis();
+
+        System.out.println(
+                "[LOGIN UNIVERSIDADE] 5 - Envio do e-mail concluído em: "
+                + (fimEmail - inicioEmail)
+                + " ms"
+        );
+
+    } catch (Exception e) {
+
+        System.out.println(
+                "[LOGIN UNIVERSIDADE] ERRO AO ENVIAR E-MAIL"
+        );
+
+        e.printStackTrace();
+
+        usuario.setCodigoAcesso(
+                null
+        );
+
         usuario.setCodigoAcessoExpiraEm(
-                LocalDateTime.now()
-                        .plusMinutes(10)
+                null
         );
 
         usuarioRepository.save(
                 usuario
         );
 
-        try {
-
-            emailService.enviarCodigoAcesso(
-                    usuario.getEmail(),
-                    codigo
-            );
-
-        } catch (Exception e) {
-
-    System.out.println("ERRO AO ENVIAR EMAIL:");
-    e.printStackTrace();
-
-    usuario.setCodigoAcesso(null);
-    usuario.setCodigoAcessoExpiraEm(null);
-
-    usuarioRepository.save(usuario);
-
-    model.addAttribute(
-            "erro",
-            "Não foi possível enviar o código de acesso."
-    );
-
-    return "login";
-}
-
-        session.setAttribute(
-                "loginUniversidadeId",
-                usuario.getId()
+        model.addAttribute(
+                "erro",
+                "Não foi possível enviar o código de acesso."
         );
 
-        return "redirect:/login/universidade/codigo";
+        return "login";
     }
+
+    // =================================================
+    // PREPARAR SESSÃO TEMPORÁRIA
+    // =================================================
+
+    session.setAttribute(
+            "loginUniversidadeId",
+            usuario.getId()
+    );
+
+    long fimTotal =
+            System.currentTimeMillis();
+
+    System.out.println(
+            "[LOGIN UNIVERSIDADE] 6 - Tempo total: "
+            + (fimTotal - inicioTotal)
+            + " ms"
+    );
+
+    System.out.println(
+            "[LOGIN UNIVERSIDADE] 7 - Redirecionando para tela do código."
+    );
+
+    return "redirect:/login/universidade/codigo";
+}
 
     // =====================================================
     // TELA DO CÓDIGO DA UNIVERSIDADE
