@@ -17,15 +17,18 @@ public class LoginController {
     private final UsuarioRepository usuarioRepository;
     private final AtendimentoRepository atendimentoRepository;
     private final EmailService emailService;
+    private final SenhaService senhaService;
 
     public LoginController(
             UsuarioRepository usuarioRepository,
             AtendimentoRepository atendimentoRepository,
-            EmailService emailService) {
+            EmailService emailService,
+            SenhaService senhaService) {
 
         this.usuarioRepository = usuarioRepository;
         this.atendimentoRepository = atendimentoRepository;
         this.emailService = emailService;
+        this.senhaService = senhaService;
     }
 
     // =====================================================
@@ -231,8 +234,7 @@ public class LoginController {
             return "redirect:/login";
         }
 
-        if (usuario.getSenha() == null
-                || !usuario.getSenha().equals(senha)) {
+        if (!senhaService.validarSenha(usuario, senha)) {
 
             model.addAttribute(
                     "erro",
@@ -356,7 +358,7 @@ public class LoginController {
         );
 
         usuario.setSenha(
-                senha
+                senhaService.codificar(senha)
         );
 
         usuario.setCadastroFinalizado(
@@ -803,8 +805,7 @@ public String loginUniversidade(
             return "login";
         }
 
-        if (usuario.getSenha() == null
-                || !usuario.getSenha().equals(senha)) {
+        if (!senhaService.validarSenha(usuario, senha)) {
 
             model.addAttribute(
                     "erro",

@@ -18,12 +18,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class AdminController {
 
     private final UsuarioRepository usuarioRepository;
+    private final SenhaService senhaService;
 
     public AdminController(
-            UsuarioRepository usuarioRepository) {
+            UsuarioRepository usuarioRepository,
+            SenhaService senhaService) {
 
-        this.usuarioRepository =
-                usuarioRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.senhaService = senhaService;
     }
 
     // =========================================================
@@ -356,7 +358,7 @@ public class AdminController {
         else if ("ADM".equals(perfil)) {
 
             usuario.setSenha(
-                    senha
+                    senhaService.codificar(senha)
             );
 
             usuario.setCadastroFinalizado(
@@ -620,7 +622,7 @@ public class AdminController {
                     && !senha.isBlank()) {
 
                 usuario.setSenha(
-                        senha
+                        senhaService.codificar(senha)
                 );
             }
 
