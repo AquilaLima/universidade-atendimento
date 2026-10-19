@@ -42,7 +42,7 @@ public class LoginController {
                 (Long) session.getAttribute("usuarioId");
 
         if (usuarioId == null) {
-            return "redirect:/login";
+            return "inicio";
         }
 
         Usuario usuario =

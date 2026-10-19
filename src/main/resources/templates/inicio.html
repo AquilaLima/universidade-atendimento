@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Universidade Atendimento</title>
+<style>
+:root{--azul:#174a72;--azul2:#0e3554;--fundo:#f4f7fb;--texto:#203040;--muted:#64748b;--borda:#dce4ec}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--texto);background:#fff}
+header{height:76px;display:flex;align-items:center;justify-content:space-between;padding:0 max(5%,calc((100% - 1160px)/2));border-bottom:1px solid var(--borda);gap:20px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:700;color:var(--azul);font-size:18px}.logo{height:42px;width:42px;background:var(--azul);color:#fff;border-radius:12px;display:grid;place-items:center;font-size:22px}
+nav{display:flex;align-items:center;gap:25px}nav a{color:#475569;text-decoration:none;font-size:14px}nav a:hover{color:var(--azul)}
+.btn{display:inline-block;padding:12px 19px;border-radius:7px;background:var(--azul);color:white!important;text-decoration:none;font-weight:700;font-size:14px;border:1px solid var(--azul);transition:.2s}.btn:hover{background:var(--azul2)}.btn.secondary{background:#fff;color:var(--azul)!important}
+.hero{background:linear-gradient(120deg,#f0f6fc,#fff 70%);padding:76px 20px 72px}.hero-inner{max-width:1120px;margin:auto;display:grid;grid-template-columns:1.2fr .8fr;align-items:center;gap:50px}
+.tag{display:inline-block;background:#e0edf8;color:var(--azul);font-weight:700;font-size:12px;padding:8px 12px;border-radius:20px;letter-spacing:.3px}
+h1{font-size:clamp(34px,4.5vw,52px);line-height:1.12;letter-spacing:-1.3px;margin:20px 0;color:#172f46}h1 span{color:var(--azul)}.lead{font-size:17px;line-height:1.75;color:var(--muted);max-width:590px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.illustration{min-height:290px;background:#fff;border:1px solid var(--borda);border-radius:20px;padding:24px;box-shadow:0 18px 45px #173b5810;display:flex;align-items:center;justify-content:center;position:relative}
+.panel{width:100%;max-width:330px;border:1px solid var(--borda);border-radius:12px;overflow:hidden;background:white}.panel-head{padding:16px;background:#f8fafc;border-bottom:1px solid var(--borda);font-weight:700}.panel-body{padding:16px}.line{height:10px;border-radius:8px;background:#e8eef4;margin:12px 0}.line.short{width:55%}.ticket{border:1px solid var(--borda);border-radius:8px;padding:12px;margin-top:10px;font-size:12px;display:flex;justify-content:space-between;gap:8px}.status{background:#e2f4e8;color:#247447;padding:4px 7px;border-radius:12px;font-size:10px;white-space:nowrap}
+section{padding:64px 20px}.wrap{max-width:1120px;margin:auto}.section-head{text-align:center;max-width:650px;margin:0 auto 34px}.section-head h2{font-size:30px;margin:0 0 12px;color:#18344d}.section-head p{color:var(--muted);line-height:1.6;margin:0}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{border:1px solid var(--borda);border-radius:13px;padding:25px;background:white}.card-icon{height:44px;width:44px;border-radius:10px;background:#eaf2f9;color:var(--azul);display:grid;place-items:center;font-size:22px}.card h3{margin:18px 0 9px;font-size:18px}.card p{margin:0;color:var(--muted);line-height:1.65;font-size:14px}
+.steps{background:var(--fundo)}.step-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:25px}.step{text-align:center;padding:12px}.num{margin:auto;height:42px;width:42px;display:grid;place-items:center;border-radius:50%;background:var(--azul);color:white;font-weight:bold}.step h3{font-size:16px}.step p{font-size:14px;color:var(--muted);line-height:1.6}
+.cta{background:var(--azul2);color:white;border-radius:18px;padding:38px;display:flex;align-items:center;justify-content:space-between;gap:25px}.cta h2{margin:0 0 8px}.cta p{margin:0;color:#d8e5ef;line-height:1.6}.cta .btn{background:white;color:var(--azul)!important;border-color:white}
+footer{border-top:1px solid var(--borda);padding:25px 20px;color:var(--muted);font-size:13px}.foot{max-width:1120px;margin:auto;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+@media(max-width:760px){header{padding:15px 20px;height:auto}nav a:not(.btn){display:none}.hero{padding:48px 20px}.hero-inner{grid-template-columns:1fr;gap:32px}.illustration{min-height:250px}.cards,.step-grid{grid-template-columns:1fr}.cta{align-items:flex-start;flex-direction:column}section{padding:48px 20px}}
+</style>
+</head>
+<body>
+<header>
+  <a href="/" class="brand" style="text-decoration:none"><span class="logo">✦</span><span>Universidade Atendimento</span></a>
+  <nav><a href="#como-funciona">Como funciona</a><a href="#recursos">Recursos</a><a href="/faq">Perguntas frequentes</a><a class="btn" href="/login">Acessar sistema</a></nav>
+</header>
+<main>
+<section class="hero">
+ <div class="hero-inner">
+  <div><span class="tag">PORTAL DE ATENDIMENTO ACADÊMICO</span>
+   <h1>Seu atendimento universitário, <span>mais simples.</span></h1>
+   <p class="lead">Um espaço para acompanhar solicitações, abrir chamados e manter a comunicação entre estudantes e equipe universitária em um só lugar.</p>
+   <div class="actions"><a class="btn" href="/login">Entrar no sistema&nbsp; →</a><a class="btn secondary" href="#como-funciona">Conhecer a plataforma</a></div>
+  </div>
+  <div class="illustration" aria-label="Ilustração demonstrativa de um painel de chamados">
+   <div class="panel"><div class="panel-head">Resumo dos atendimentos <span style="float:right;color:#64748b">▤</span></div><div class="panel-body"><div style="font-size:12px;color:#64748b">Olá! Acompanhe suas solicitações</div><div class="line short"></div><div class="ticket"><span>Solicitação acadêmica</span><span class="status">Em andamento</span></div><div class="ticket"><span>Atualização cadastral</span><span class="status">Recebido</span></div><div class="ticket"><span>Suporte ao estudante</span><span style="color:#64748b">Resolvido</span></div><div class="line" style="width:75%;margin-top:20px"></div><div class="line short"></div></div></div>
+  </div>
+ </div>
+</section>
+<section id="recursos"><div class="wrap">
+ <div class="section-head"><h2>Suporte pensado para você</h2><p>Organize suas solicitações e acompanhe cada etapa do atendimento com mais clareza.</p></div>
+ <div class="cards">
+  <article class="card"><div class="card-icon">▤</div><h3>Abertura de chamados</h3><p>Registre dúvidas ou solicitações e descreva o que precisa com as informações necessárias para o atendimento.</p></article>
+  <article class="card"><div class="card-icon">◷</div><h3>Acompanhamento</h3><p>Consulte o andamento dos seus chamados e visualize as atualizações relacionadas às suas solicitações.</p></article>
+  <article class="card"><div class="card-icon">☏</div><h3>Comunicação centralizada</h3><p>Mantenha as mensagens e o histórico do atendimento organizados em um único ambiente.</p></article>
+ </div>
+</div></section>
+<section class="steps" id="como-funciona"><div class="wrap">
+ <div class="section-head"><h2>Como funciona</h2><p>Começar é simples. Acesse o portal e siga o fluxo correspondente ao seu perfil.</p></div>
+ <div class="step-grid"><div class="step"><div class="num">1</div><h3>Acesse sua conta</h3><p>Entre como aluno, equipe da universidade ou administrador.</p></div><div class="step"><div class="num">2</div><h3>Registre sua solicitação</h3><p>Descreva sua necessidade para que ela seja encaminhada corretamente.</p></div><div class="step"><div class="num">3</div><h3>Acompanhe o atendimento</h3><p>Consulte o status e acompanhe as atualizações do chamado.</p></div></div>
+</div></section>
+<section><div class="wrap"><div class="cta"><div><h2>Precisa de atendimento?</h2><p>Acesse o portal para abrir ou acompanhar uma solicitação.</p></div><a class="btn" href="/login">Acessar minha conta&nbsp; →</a></div></div></section>
+</main>
+<footer><div class="foot"><span>© <span id="ano"></span> Universidade Atendimento</span><span>Portal de suporte e atendimento acadêmico</span></div></footer>
+<script>document.getElementById('ano').textContent = new Date().getFullYear();</script>
+</body></html>
